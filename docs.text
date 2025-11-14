@@ -1,0 +1,42 @@
+Table cinema_film {
+  id integer [primary key]
+  cinema_id integer
+  film_id integer
+}???
+
+Table ticket {
+  id integer [primary key]
+  user_id integer
+  screening_id integer
+  seat_id integer
+  price float
+  status varchar
+  created_at timestamp
+}
+
+Ref: film.details_id > film_details.id
+Ref: cinema.details_id > cinema_details.id
+
+Ref: hall.cinema_id > cinema.id
+
+Ref: seat.hall_id > hall.id
+
+Ref: screening.cinema_id > cinema.id
+Ref: screening.hall_id > hall.id
+Ref: screening.film_id > film.id
+
+Ref: review.film_id > film.id
+Ref: review.user_id > user.id
+
+Ref: film_cast.film_id > film.id
+Ref: film_cast.person_id > person.id
+
+Ref: film_genre.film_id > film.id
+Ref: film_genre.genre_id > genre.id
+
+Ref: cinema_film.cinema_id > cinema.id
+Ref: cinema_film.film_id > film.id
+
+Ref: ticket.user_id > user.id
+Ref: ticket.screening_id > screening.id
+Ref: ticket.seat_id > seat.id
