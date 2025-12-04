@@ -1,0 +1,22 @@
+name: db-migrations
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: kinokor
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5445:5432'
+    networks:
+      - migrations_kinokor
+
+volumes:
+  postgres_data:
+
+networks:
+  migrations_kinokor:
