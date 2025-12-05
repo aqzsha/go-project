@@ -1,0 +1,31 @@
+app:
+  name: auth
+  environment: development
+  url: 0.0.0.0:3001
+  key:
+
+db:
+  postgres:
+    connection: postgres
+    host: postgres
+    port: 5432
+    database: do_auth
+    username:
+    password:
+    sslmode: disable
+
+redis:
+  host: redis
+  password: null
+  port: 6379
+  cache_db: 2
+  protocol: 3
+
+graylog:
+  host: 10.10.22.63
+  port: 12201
+  source: do_auth
+
+oauth:
+  access_token_exp: 60
+  refresh_token_exp: 120
