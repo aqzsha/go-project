@@ -19,6 +19,7 @@ type Repository interface {
 	CreateGenre(ctx context.Context, input dto.CreateFilmGenreDTO) (models.FilmGenre, error)
 	DeleteGenre(ctx context.Context, id int64) (bool, error)
 	GetGenreList(ctx context.Context) ([]models.FilmGenre, error)
+ 	List(ctx context.Context) ([]models.Film, error)
 }
 
 type repository struct {
@@ -121,9 +122,17 @@ func (r *repository) GetGenreList(ctx context.Context) ([]models.FilmGenre, erro
 		return nil, fmt.Errorf("failed to get genre list: %w", err)
 	}
 
-	if len(genres) == 0 {
-	    return nil, ErrNotFound
+	return genres, nil
+}
+
+func (r *repository) List(ctx context.Context) ([]models.Film, error) {
+	var film []models.Film
+
+	if err := r.db.WithContext(ctx).
+		Find(&film).Error; err != nil {
+
+		return nil, fmt.Errorf("failed to get Film list: %w", err)
 	}
 
-	return genres, nil
+	return film, nil
 }

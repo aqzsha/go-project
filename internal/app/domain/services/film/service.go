@@ -19,6 +19,7 @@ type Service interface {
 	Create(ctx context.Context, input dto.CreateFilmDTO) (models.Film, error)
 	Get(ctx context.Context, id int64) (models.Film, error)
 	Delete(ctx context.Context, id int64) (bool, error)
+	List(ctx context.Context) ([]models.Film, error)
 	CreateGenre(ctx context.Context, input dto.CreateFilmGenreDTO) (models.FilmGenre, error)
 	DeleteGenre(ctx context.Context, id int64) (bool, error)
 	GetGenreList(ctx context.Context) ([]models.FilmGenre, error)
@@ -114,4 +115,16 @@ func (s *service) GetGenreList(ctx context.Context) ([]models.FilmGenre, error) 
 	}
 
 	return film, err
+}
+
+
+func (s *service) List(ctx context.Context) ([]models.Film, error) {
+	review, err := s.repository.List(ctx)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return review, ErrNotFound
+		}
+	}
+
+	return review, err
 }
