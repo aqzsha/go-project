@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-//ticket
 type Ticket struct {
 	ID          int       `json:"id" gorm:"primaryKey"`
 	UserID      int       `json:"user_id" gorm:"not null;index"`
@@ -68,10 +67,12 @@ type TicketWithDetails struct {
 
 type ScreeningInfo struct {
 	ID       int       `json:"id"`
+	FilmID   int       `json:"film_id"`
 	StartAt  time.Time `json:"start_at"`
 	EndAt    time.Time `json:"end_at"`
 	Language string    `json:"language"`
 	Format   string    `json:"format"`
+	Price    float64   `json:"price"`
 }
 
 type SeatInfo struct {

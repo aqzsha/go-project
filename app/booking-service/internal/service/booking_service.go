@@ -11,6 +11,7 @@ import (
 	"booking-service/internal/repository"
 	"booking-service/pkg/cache"
 	"booking-service/pkg/qrcode"
+	"booking-service/pkg/pdf"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -29,7 +30,7 @@ var (
 
 const (
 	ReservationTTL = 5 * time.Minute
-	CheckInWindow  = 30 * time.Minute
+	CheckInWindow  = 30 * time.Minute //check-in 30 min before screening
 )
 
 type BookingService interface {
@@ -47,7 +48,7 @@ type BookingService interface {
 
 type bookingService struct {
 	ticketRepo       repository.TicketRepository
-	screeningClient  ScreeningClient 
+	screeningClient  ScreeningClient
 	cache            cache.RedisCache
 	qrCodeGenerator  qrcode.Generator
 	pdfGenerator     PDFGenerator
@@ -73,7 +74,6 @@ func NewBookingService(
 }
 
 func (s *bookingService) ReserveSeats(ctx context.Context, req domain.ReserveSeatsRequest) (*domain.BookingResponse, error) {
-	//get screening
 	screening, err := s.screeningClient.GetScreening(ctx, req.ScreeningID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get screening: %w", err)
@@ -181,23 +181,59 @@ func (s *bookingService) ConfirmBooking(ctx context.Context, req domain.ConfirmB
 
 	s.releaseSeats(ctx, tickets[0].ScreeningID, seatIDs)
 
-	//qr - generator
+	//generator QR codes, PDFs and send emails for each ticket
 	for i := range tickets {
 		tickets[i].Status = domain.TicketStatusPaid
 		
-		pdfPath, err := s.pdfGenerator.GenerateTicket(ctx, &tickets[i])
-		if err == nil {
+		ticketDetails, err := s.getTicketDetails(ctx, &tickets[i])
+		if err != nil {
+			log.Printf("Error getting ticket details: %v", err)
+			continue
+		}
+		
+		qrCodeBase64, err := s.qrCodeGenerator.Generate(tickets[i].QRCode)
+		if err != nil {
+			log.Printf("Error generating QR code: %v", err)
+			continue
+		}
+		
+		pdfData, err := s.pdfGenerator.GenerateTicket(ctx, &tickets[i], ticketDetails, qrCodeBase64)
+		if err != nil {
+			log.Printf("Error generating PDF: %v", err)
+			continue
+		}
+		
+		//upload PDF to MinIO
+		pdfPath, err := s.storageService.UploadTicket(ctx, tickets[i].ID, pdfData)
+		if err != nil {
+			log.Printf("Error uploading PDF: %v", err)
+		} else {
 			tickets[i].PDFPath = pdfPath
 			s.ticketRepo.Update(ctx, &tickets[i])
 		}
+		
+		//generate download URL
+		downloadURL := ""
+		if pdfPath != "" {
+			downloadURL, _ = s.storageService.GetTicketURL(ctx, pdfPath, 7*24*time.Hour)
+		}
+		
+		//get user email
+		userEmail, err := s.getUserEmail(ctx, req.UserID)
+		if err == nil {
+			//send email with PDF attachment
+			go s.notificationSvc.SendTicketEmail(context.Background(), userEmail, ticketDetails, pdfData, downloadURL)
+		}
 	}
 
+	//send overall confirmation notification
 	s.notificationSvc.SendBookingConfirmation(ctx, req.UserID, tickets)
 
 	return nil
 }
 
 func (s *bookingService) CreateTicket(ctx context.Context, req domain.CreateTicketRequest) (*domain.BookingResponse, error) {
+	//direct purchase flow (reserve + confirm in one step)
 	reserveReq := domain.ReserveSeatsRequest{
 		UserID:      req.UserID,
 		ScreeningID: req.ScreeningID,
@@ -209,6 +245,7 @@ func (s *bookingService) CreateTicket(ctx context.Context, req domain.CreateTick
 		return nil, err
 	}
 
+	//auto-confirm (assuming payment is handled externally)
 	var ticketIDs []int
 	for _, ticket := range booking.Tickets {
 		ticketIDs = append(ticketIDs, ticket.ID)
@@ -346,7 +383,7 @@ func (s *bookingService) ExpireScreeningTickets(ctx context.Context) error {
 		if ticket.Status != domain.TicketStatusCheckedIn {
 			s.ticketRepo.UpdateStatus(ctx, ticket.ID, domain.TicketStatusExpired)
 			
-			// Notify user that they missed the screening
+			//if user missed the screening
 			s.notificationSvc.SendScreeningMissed(ctx, ticket.UserID, ticket.ID)
 		}
 	}

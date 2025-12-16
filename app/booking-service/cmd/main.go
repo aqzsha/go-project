@@ -1,5 +1,4 @@
-package cmd
-//package main
+package main
 
 import (
 	"context"
@@ -17,7 +16,7 @@ import (
 	"booking-service/internal/worker"
 	"booking-service/pkg/cache"
 	"booking-service/pkg/database"
-	"booking-service/pkg/qrcode"
+	"booking-service/pkg/pdf"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -56,16 +55,47 @@ func main() {
 
 	ticketRepo := repository.NewTicketRepository(db)
 
-	screeningClient := service.NewScreeningClient(getEnv("SCREENING_SERVICE_URL", "http://localhost:8001"))
-	pdfGenerator := service.NewPDFGenerator()
-	notificationService := service.NewNotificationService()
+	//MinIO storage
+	minioEndpoint := getEnv("MINIO_ENDPOINT", "localhost:9000")
+	minioAccessKey := getEnv("MINIO_ACCESS_KEY", "minioadmin")
+	minioSecretKey := getEnv("MINIO_SECRET_KEY", "minioadmin")
+	minioBucket := getEnv("MINIO_BUCKET", "movie-tickets")
+	
+	minioStorage, err := storage.NewMinIOStorage(minioEndpoint, minioAccessKey, minioSecretKey, minioBucket, false)
+	if err != nil {
+		log.Printf("Warning: MinIO storage initialization failed: %v", err)
+	}
 
-	//qr
+	//external clients (mock for now)
+	screeningClient := service.NewScreeningClient(getEnv("SCREENING_SERVICE_URL", "http://localhost:8001"))
+	
+	smtpHost := getEnv("SMTP_HOST", "smtp.gmail.com")
+	smtpPort := getEnv("SMTP_PORT", "587")
+	smtpUser := getEnv("SMTP_USER", "")
+	smtpPass := getEnv("SMTP_PASSWORD", "")
+	fromEmail := getEnv("FROM_EMAIL", "noreply@cinema.com")
+	fromName := getEnv("FROM_NAME", "Cinema Booking")
+	
+	emailService := email.NewEmailService(smtpHost, smtpPort, smtpUser, smtpPass, fromEmail, fromName)
+	
+	//user client (mock)
+	userClient := service.NewUserClient(getEnv("USER_SERVICE_URL", "http://localhost:8000"))
+	
+	//notification service with RabbitMQ
+	rabbitURL := getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+	notificationService, err := service.NewNotificationService(emailService, minioStorage, rabbitURL, userClient)
+	if err != nil {
+		log.Printf("Warning: Notification service initialization failed: %v", err)
+	}
+
 	qrCodeGen := qrcode.NewGenerator(256)
+	
+	pdfGenerator := pdf.NewTicketGenerator("")
 
 	bookingService := service.NewBookingService(
 		ticketRepo,
 		screeningClient,
+		minioStorage,
 		redisCache,
 		qrCodeGen,
 		pdfGenerator,
