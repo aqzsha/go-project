@@ -2,20 +2,26 @@ package api
 
 import (
 	"fmt"
+
 	"gateway/configs"
 	myhttp "gateway/internal/app/core/http"
 	microservice "gateway/internal/app/core/microservices"
+
 	authHandler "gateway/internal/app/domain/auth/handlers"
 	passwordHandler "gateway/internal/app/domain/auth/handlers/password"
 	authService "gateway/internal/app/domain/auth/services"
 	passwordService "gateway/internal/app/domain/auth/services/password"
+
+	moviesProxy "gateway/internal/app/domain/movies/handlers"
 )
 
 type dependency struct {
-	authService           authService.Service
-	authHandler           *authHandler.AuthHandler
-	passwordService       passwordService.Service
-	passwordHandler       *passwordHandler.Handler
+	authService     authService.Service
+	authHandler     *authHandler.AuthHandler
+	passwordService passwordService.Service
+	passwordHandler *passwordHandler.Handler
+
+	movieProxy *moviesProxy.ProxyHandler
 }
 
 func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
@@ -32,10 +38,18 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	serviceAuth := authService.NewService(authRequestHandler)
 	servicePassword := passwordService.NewService(authRequestHandler)
 
+	movieProxy := moviesProxy.NewProxyHandler(
+		baseHttp.Client,
+		configs.Config.Microservices.Movies.BaseURL,
+	)
+
+
 	return &dependency{
-		authService:           serviceAuth,
-		authHandler:           authHandler.NewHandler(serviceAuth),
-		passwordService:       servicePassword,
-		passwordHandler:       passwordHandler.NewHandler(servicePassword),
+		authService:     serviceAuth,
+		authHandler:     authHandler.NewHandler(serviceAuth),
+		passwordService: servicePassword,
+		passwordHandler: passwordHandler.NewHandler(servicePassword),
+
+		movieProxy: movieProxy,
 	}, nil
 }

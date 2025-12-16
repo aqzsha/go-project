@@ -21,7 +21,7 @@ func (s *Server) initRoutes() error {
 	}
 
 	s.initDomainRoutes()
-
+	s.initDomainMovieRoutes()
 	return nil
 }
 
