@@ -1,73 +1,158 @@
 package film
 
 import (
-	film "gateway/internal/app/domain/movies/services"
 	"gateway/internal/app/core/helpers/errorhandler"
+	service "gateway/internal/app/domain/movies/services/film"
 	"gateway/pkg/response"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type FilmHandler struct {
-	service film.Service
+type Handler struct {
+	service service.Service
 }
 
-func NewHandler(service film.Service) *FilmHandler {
-	return &FilmHandler{service: service}
+func NewHandler(service service.Service) *Handler {
+	return &Handler{service: service}
 }
 
-func (h *FilmHandler) Create(ctx *gin.Context) {
-	resp := h.service.Create(
-		ctx.Request.Context(),
-		ctx.Request.Body,
-	)
-
+// Create CreateMovie godoc
+// @Summary		Create Movie
+// @Description	Creates a Movie
+// @Tags		Movie
+// @Accept		json
+// @Produce		json
+// @Param		request  body	film.CreateFilmDTO	true	"Film data"
+// @Success		200		{object}	response.CommonResponse
+// @Router		/film/store [post]
+func (h *Handler) Create(ctx *gin.Context) {
+	resp := h.service.Create(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
-		errorhandler.FailOnError(resp.Error, "CreateFilm proxy error")
+		errorhandler.FailOnError(resp.Error, "CreateFilm of Movie service error")
+
 		return
 	}
 
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-func (h *FilmHandler) Get(ctx *gin.Context) {
-	resp := h.service.Get(
-		ctx.Request.Context(),
-		ctx.Param("id"),
-	)
-
+// Delete DeleteMovie godoc
+// @Summary		Delete Movie by ID
+// @Description	Deletes a Movie by ID
+// @Tags		Movie
+// @Param		id	path	int64	true	"Movie ID"
+// @Produce		json
+// @Success		200	{object}	response.CommonResponse
+// @Router		/film/delete/{id} [delete]
+func (h *Handler) Delete(ctx *gin.Context) {
+	resp := h.service.Delete(ctx.Request.Context(), ctx.Param("id"))
 	if resp.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
-		errorhandler.FailOnError(resp.Error, "GetFilm proxy error")
+		errorhandler.FailOnError(resp.Error, "DeleteFilm of Movie service error")
+
 		return
 	}
 
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-func (h *FilmHandler) List(ctx *gin.Context) {
+
+// Get GetMovie godoc
+// @Summary		Get Movie by ID
+// @Description	Returns Movie details by its ID
+// @Tags		Movie
+// @Produce		json
+// @Param		id	path	int64	true	"Movie ID"
+// @Success		200	{object}	response.CommonResponse
+// @Router		/film/get/{id} [get]
+func (h *Handler) Get(ctx *gin.Context) {
+	resp := h.service.Get(ctx.Request.Context(), ctx.Param("id"))
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "GetFilm of Movie service error")
+
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+
+// List   ListMovie godoc
+// @Summary		Get list of movie
+// @Description	Returns list of Movie
+// @Tags		Movie
+// @Produce		json
+// @Success		200	{object}	response.CommonResponse
+// @Router		/film/list [get]
+func (h *Handler) List(ctx *gin.Context) {
 	resp := h.service.List(ctx.Request.Context())
-
 	if resp.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
-		errorhandler.FailOnError(resp.Error, "ListFilm proxy error")
+		errorhandler.FailOnError(resp.Error, "ListFilm of Movie service error")
+
 		return
 	}
 
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-func (h *FilmHandler) Delete(ctx *gin.Context) {
-	resp := h.service.Delete(
-		ctx.Request.Context(),
-		ctx.Param("id"),
-	)
 
+// Create CreateGenre godoc
+// @Summary		Create Genre
+// @Description	Creates a Genre
+// @Tags		Genre
+// @Accept		json
+// @Produce		json
+// @Param		request  body	film.CreateFilmDTO	true	"Film data"
+// @Success		200		{object}	response.CommonResponse
+// @Router		/film/genre/store [post]
+func (h *Handler) CreateGenre(ctx *gin.Context) {
+	resp := h.service.CreateGenre(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
-		errorhandler.FailOnError(resp.Error, "DeleteFilm proxy error")
+		errorhandler.FailOnError(resp.Error, "CreateGenre of Movie service error")
+
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+
+// Delete DeleteGenre godoc
+// @Summary		Delete Genre by ID
+// @Description	Deletes a Genre by ID
+// @Tags		Genre
+// @Param		id	path	int64	true	"Genre ID"
+// @Produce		json
+// @Success		200	{object}	response.CommonResponse
+// @Router		/film/genre/delete/{id} [delete]
+func (h *Handler) DeleteGenre(ctx *gin.Context) {
+	resp := h.service.DeleteGenre(ctx.Request.Context(), ctx.Param("id"))
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "DeleteGenre of Movie service error")
+
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+
+// List   ListGenre godoc
+// @Summary		Get list of genre
+// @Description	Returns list of genre
+// @Tags		Genre
+// @Produce		json
+// @Success		200	{object}	response.CommonResponse
+// @Router		/film/genre/list [get]
+func (h *Handler) GetGenreList(ctx *gin.Context) {
+	resp := h.service.GetGenreList(ctx.Request.Context())
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "GetGenreList of Movie service error")
+
 		return
 	}
 

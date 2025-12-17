@@ -21,7 +21,7 @@ func (s *Server) initRoutes() error {
 	}
 
 	s.initDomainRoutes()
-	s.initDomainMovieRoutes()
+
 	return nil
 }
 
@@ -46,4 +46,5 @@ func (s *Server) initDomainRoutes() {
 	authMiddlewareRouter.Use(authMiddleware.Handle())
 
 	s.initDomainAuthRoutes()
+	s.initDomainMovieRoutes()
 }

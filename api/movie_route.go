@@ -1,0 +1,16 @@
+package api
+
+func (s *Server) initDomainMovieRoutes() {
+	s.initFilmRoutes()
+}
+
+func (s *Server) initFilmRoutes() {
+	FilmRoutes := mainRouter.Group("film/")
+	FilmRoutes.POST("/store", s.deps.filmHandler.Create)
+	FilmRoutes.GET("/get/:id", s.deps.filmHandler.Get)
+	FilmRoutes.DELETE("/delete/:id", s.deps.filmHandler.Delete)
+	FilmRoutes.GET("/list", s.deps.filmHandler.List)
+	FilmRoutes.POST("/genre/store", s.deps.filmHandler.CreateGenre)
+	FilmRoutes.GET("/genre/list", s.deps.filmHandler.GetGenreList)
+	FilmRoutes.GET("/genre/delete/:id", s.deps.filmHandler.DeleteGenre)
+}
