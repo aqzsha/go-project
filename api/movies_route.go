@@ -1,10 +1,10 @@
 package api
 
 func (s *Server) initDomainMovieRoutes() {
-	movies := mainRouter.Group("")
+	movies := mainRouter.Group("/film")
 
-	movies.Any("/film/*path", s.deps.movieProxy.Handle)
-	movies.Any("/cinema/*path", s.deps.movieProxy.Handle)
-	movies.Any("/genre/*path", s.deps.movieProxy.Handle)
-	movies.Any("/hall/*path", s.deps.movieProxy.Handle)
+	movies.POST("", s.deps.filmHandler.Create)
+	movies.GET("/:id", s.deps.filmHandler.Get)
+	movies.GET("", s.deps.filmHandler.List)
+	movies.DELETE("/:id", s.deps.filmHandler.Delete)
 }

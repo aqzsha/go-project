@@ -12,7 +12,8 @@ import (
 	authService "gateway/internal/app/domain/auth/services"
 	passwordService "gateway/internal/app/domain/auth/services/password"
 
-	moviesProxy "gateway/internal/app/domain/movies/handlers"
+	filmHandler "gateway/internal/app/domain/movies/handlers/film"
+	filmService "gateway/internal/app/domain/movies/services"
 )
 
 type dependency struct {
@@ -22,13 +23,13 @@ type dependency struct {
 	passwordService passwordService.Service
 	passwordHandler *passwordHandler.Handler
 
-	// movies (ТОЛЬКО proxy)
-	movieProxy *moviesProxy.ProxyHandler
+	// movies (proxy)
+	filmHandler *filmHandler.FilmHandler
 }
 
 func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 
-	// --- AUTH ---
+	// ---------- AUTH ----------
 	authClient, err := microservice.NewBaseClient(
 		baseHttp.Client,
 		configs.Config.Microservices.Auth.BaseURL,
@@ -43,11 +44,18 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	authSvc := authService.NewService(authRH)
 	passwordSvc := passwordService.NewService(authRH)
 
-	// --- MOVIES PROXY ---
-	movieProxy := moviesProxy.NewProxyHandler(
+	// ---------- MOVIES ----------
+	moviesClient, err := microservice.NewBaseClient(
 		baseHttp.Client,
 		configs.Config.Microservices.Movies.BaseURL,
+		configs.Config.Microservices.Movies.ApiKey,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("microservices movies client: %w", err)
+	}
+
+	moviesRH := microservice.NewRequestHandler(moviesClient)
+	moviesSvc := filmService.NewService(moviesRH)
 
 	return &dependency{
 		authService:     authSvc,
@@ -55,6 +63,6 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 		passwordService: passwordSvc,
 		passwordHandler: passwordHandler.NewHandler(passwordSvc),
 
-		movieProxy: movieProxy,
+		filmHandler: filmHandler.NewHandler(moviesSvc),
 	}, nil
 }

@@ -1,41 +1,75 @@
 package film
 
 import (
-	"gateway/internal/app/domain/movies/services"
-	 _ "gateway/internal/app/domain/auth/dto/auth"
+	film "gateway/internal/app/domain/movies/services"
+	"gateway/internal/app/core/helpers/errorhandler"
+	"gateway/pkg/response"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
+type FilmHandler struct {
 	service film.Service
 }
 
-func NewHandler(service film.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(service film.Service) *FilmHandler {
+	return &FilmHandler{service: service}
 }
 
-// CreateFilm godoc
-// @Summary     Create film
-// @Tags        Movies
-// @Accept      json
-// @Produce     json
-// @Param       request body film.CreateFilmDTO true "Film data"
-// @Success     200 {object} response.CommonResponse
-// @Router      /api/v1/film/store [post]
-func (h *Handler) Create(ctx *gin.Context) {
-	resp := h.service.Create(ctx.Request.Context(), ctx.Request.Body)
+func (h *FilmHandler) Create(ctx *gin.Context) {
+	resp := h.service.Create(
+		ctx.Request.Context(),
+		ctx.Request.Body,
+	)
+
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "CreateFilm proxy error")
+		return
+	}
+
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-// GetFilm godoc
-// @Summary     Get film
-// @Tags        Movies
-// @Produce     json
-// @Param       id path int true "Film ID"
-// @Success     200 {object} response.CommonResponse
-// @Router      /api/v1/film/get/{id} [get]
-func (h *Handler) Get(ctx *gin.Context) {
-	id := ctx.Param("id")
-	resp := h.service.Get(ctx.Request.Context(), id)
+func (h *FilmHandler) Get(ctx *gin.Context) {
+	resp := h.service.Get(
+		ctx.Request.Context(),
+		ctx.Param("id"),
+	)
+
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "GetFilm proxy error")
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+
+func (h *FilmHandler) List(ctx *gin.Context) {
+	resp := h.service.List(ctx.Request.Context())
+
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "ListFilm proxy error")
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+
+func (h *FilmHandler) Delete(ctx *gin.Context) {
+	resp := h.service.Delete(
+		ctx.Request.Context(),
+		ctx.Param("id"),
+	)
+
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "DeleteFilm proxy error")
+		return
+	}
+
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
