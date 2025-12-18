@@ -16,7 +16,7 @@ var (
 )
 
 type Service interface {
-	Create(ctx context.Context, input dto.CreateFilmDTO) (models.Film, error)
+	Create(ctx context.Context, input dto.CreateFilmServiceDTO) (models.Film, error)
 	Get(ctx context.Context, id int64) (models.Film, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	List(ctx context.Context) ([]models.Film, error)
@@ -39,11 +39,10 @@ func NewService(
 	}
 }
 
-func (s *service) Create(ctx context.Context, input dto.CreateFilmDTO) (models.Film, error) {
-	film, err := s.repository.Create(ctx, dto.CreateFilmDTO{
+func (s *service) Create(ctx context.Context, input dto.CreateFilmServiceDTO) (models.Film, error) {
+	film, err := s.repository.Create(ctx, dto.CreateFilmServiceDTO{
 		Name:        input.Name,
 		Description: input.Description,
-		DetailsID:   input.DetailsID,
 		StartDate:   input.StartDate,
 		EndDate:     input.EndDate,
 		Duration:    input.Duration,

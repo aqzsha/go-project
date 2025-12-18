@@ -124,6 +124,21 @@ func router() *gin.Engine {
 	return r
 }
 
+func NewTestEngine(ctx context.Context) (*gin.Engine, *gorm.DB, error) {
+	s := &Server{}
+
+	if err := s.initConfig(ctx); err != nil {
+		return nil, nil, fmt.Errorf("init config: %w", err)
+	}
+
+	if err := s.initLayers(ctx); err != nil {
+		return nil, nil, fmt.Errorf("init layers: %w", err)
+	}
+
+	return handler, s.pgdb, nil
+}
+
+
 func (s *Server) initServer(_ context.Context) error {
 	httpCfg := configs.Config.App.Url
 	httpServer := http.NewHttpServer(handler, http.Port(httpCfg))

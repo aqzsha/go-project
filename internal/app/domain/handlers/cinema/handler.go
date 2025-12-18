@@ -34,9 +34,9 @@ func (h *Handler) Create(ctx *gin.Context) {
 	cinema, err := h.service.Create(ctx, dto.CreateCinemaDTO{
 		Name:        payload.Name,
 		Description: payload.Description,
-		Address: payload.Address,
-		Latitude: payload.Latitude,
-		Longitude: payload.Longitude,
+		Address:     payload.Address,
+		Latitude:    payload.Latitude,
+		Longitude:   payload.Longitude,
 	})
 	if err != nil {
 		if code, ok := errStatusMap[err]; ok {

@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("movie not found")
+	ErrNotFound = errors.New("cinema not found")
 )
 
 type Service interface {

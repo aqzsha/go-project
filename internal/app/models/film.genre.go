@@ -5,6 +5,6 @@ func (FilmGenre) TableName() string {
 }
 
 type FilmGenre struct {
-	FilmID  int64
-	GenreID int64
+	FilmID  int64 `gorm:"column:film_id;primaryKey" json:"film_id"`
+	GenreID int64 `gorm:"column:genre_id;primaryKey" json:"genre_id"`
 }

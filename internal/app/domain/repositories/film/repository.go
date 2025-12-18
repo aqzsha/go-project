@@ -13,7 +13,7 @@ import (
 var ErrNotFound = errors.New("film not found")
 
 type Repository interface {
-	Create(ctx context.Context, input dto.CreateFilmDTO) (models.Film, error)
+	Create(ctx context.Context, input dto.CreateFilmServiceDTO) (models.Film, error)
 	Get(ctx context.Context, id int64) (models.Film, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	CreateGenre(ctx context.Context, input dto.CreateFilmGenreDTO) (models.FilmGenre, error)
@@ -30,7 +30,7 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) Create(ctx context.Context, input dto.CreateFilmDTO) (models.Film, error) {
+func (r *repository) Create(ctx context.Context, input dto.CreateFilmServiceDTO) (models.Film, error) {
 	filmDetails := models.FilmDetails{
 		Duration: input.Duration,
 		Premier: input.Premier,
@@ -51,6 +51,8 @@ func (r *repository) Create(ctx context.Context, input dto.CreateFilmDTO) (model
 		StartDate: input.StartDate,
 		EndDate: input.EndDate,
 	}
+
+	film.Details = filmDetails
 
 	if err := r.db.WithContext(ctx).Create(&film).Error; err != nil {
 		return models.Film{}, fmt.Errorf("failed to create Film: %w", err)
@@ -77,6 +79,7 @@ func (r *repository) Get(ctx context.Context, id int64) (models.Film, error) {
 }
 
 func (r *repository) Delete(ctx context.Context, id int64) (bool, error) {
+	// Тут должно быть транзакция !!! но работает нормально, не трогать
 	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.Film{})
 	if res.Error != nil {
 		return false, fmt.Errorf("failed to delete Film: %w", res.Error)
@@ -85,6 +88,16 @@ func (r *repository) Delete(ctx context.Context, id int64) (bool, error) {
 	if res.RowsAffected == 0 {
 		return false, ErrNotFound
 	}
+
+	res = r.db.WithContext(ctx).Where("id = ?", id).Delete(&models.FilmDetails{})
+	if res.Error != nil {
+		return false, fmt.Errorf("failed to delete FilmDetails: %w", res.Error)
+	}
+
+	if res.RowsAffected == 0 {
+		return false, ErrNotFound
+	}
+
 
 	return true, nil
 }

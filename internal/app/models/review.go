@@ -7,11 +7,10 @@ func (Review) TableName() string {
 }
 
 type Review struct {
-	ID              int64     `gorm:"primaryKey;column:id"`
-	FilmID          int64
-	UserID          int64 
-	Body            string   
-	Rating          float64   
-	CreatedAt       *time.Time   
+	ID        int64      `gorm:"primaryKey;column:id" json:"id"`
+	FilmID    int64      `gorm:"column:film_id" json:"film_id"`
+	UserID    int64      `gorm:"column:user_id" json:"user_id"`
+	Body      string     `gorm:"column:body;type:text" json:"body"`
+	Rating    float64    `gorm:"column:rating" json:"rating"`
+	CreatedAt *time.Time `gorm:"column:created_at" json:"created_at"`
 }
-	

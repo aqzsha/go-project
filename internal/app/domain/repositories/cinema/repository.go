@@ -42,7 +42,9 @@ func (r *repository) Create(ctx context.Context, input dto.CreateCinemaDTO) (mod
 	cinema := models.Cinema{
 		Name: input.Name,
 		DetailsID: cinemaDetails.ID,
+		Details: cinemaDetails,
 	}
+
 
 	if err := r.db.WithContext(ctx).Create(&cinema).Error; err != nil {
 		return models.Cinema{}, fmt.Errorf("failed to create Cinema: %w", err)

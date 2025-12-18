@@ -63,6 +63,7 @@ func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("../../../..")
 
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Printf("не удалось спарсить конфиг файл! Ошибка:%s", err)
