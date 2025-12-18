@@ -15,6 +15,8 @@ import (
 	cinemaService "gateway/internal/app/domain/movies/services/cinema"
 	hallHandler "gateway/internal/app/domain/movies/handlers/hall"
 	hallService "gateway/internal/app/domain/movies/services/hall"
+	genreHandler "gateway/internal/app/domain/movies/handlers/genre"
+	genreService "gateway/internal/app/domain/movies/services/genre"
 )
 
 type dependency struct {
@@ -28,6 +30,8 @@ type dependency struct {
 	cinemaHandler         *cinemaHandler.Handler
 	hallService 		  hallService.Service
 	hallHandler 		  *hallHandler.Handler
+	genreService 		  genreService.Service
+	genreHandler 		  *genreHandler.Handler
 }
 
 func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
