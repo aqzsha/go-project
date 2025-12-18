@@ -3,6 +3,7 @@ package api
 func (s *Server) initDomainMovieRoutes() {
 	s.initFilmRoutes()
 	s.initCinemaRoutes()
+	s.initHallRoutes()
 }
 
 func (s *Server) initFilmRoutes() {
@@ -21,4 +22,12 @@ func (s *Server) initCinemaRoutes() {
 	CinemaRoutes.POST("/store", s.deps.cinemaHandler.Create)
 	CinemaRoutes.GET("/get/:id", s.deps.cinemaHandler.Get)
 	CinemaRoutes.DELETE("/delete/:id", s.deps.cinemaHandler.Delete)
+}
+
+func (s *Server) initHallRoutes() {
+	HallRoutes := mainRouter.Group("hall/")
+	HallRoutes.POST("/store", s.deps.hallHandler.Create)
+	HallRoutes.GET("/get/:id", s.deps.hallHandler.Get)
+	HallRoutes.DELETE("/delete/:id", s.deps.hallHandler.Delete)
+	HallRoutes.GET("/list", s.deps.hallHandler.List)
 }

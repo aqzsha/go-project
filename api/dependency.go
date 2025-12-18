@@ -13,6 +13,8 @@ import (
 	filmService "gateway/internal/app/domain/movies/services/film"
 	cinemaHandler "gateway/internal/app/domain/movies/handlers/cinema"
 	cinemaService "gateway/internal/app/domain/movies/services/cinema"
+	hallHandler "gateway/internal/app/domain/movies/handlers/hall"
+	hallService "gateway/internal/app/domain/movies/services/hall"
 )
 
 type dependency struct {
@@ -24,6 +26,8 @@ type dependency struct {
 	filmHandler           *filmHandler.Handler
 	cinemaService         cinemaService.Service
 	cinemaHandler         *cinemaHandler.Handler
+	hallService 		  hallService.Service
+	hallHandler 		  *hallHandler.Handler
 }
 
 func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
@@ -52,6 +56,7 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	movieRequestHandler := microservice.NewRequestHandler(movieClient)
 	serviceFilm := filmService.NewService(movieRequestHandler)
 	serviceCinema := cinemaService.NewService(movieRequestHandler)
+	serviceHall := hallService.NewService(movieRequestHandler)
 	return &dependency{
 		authService:           serviceAuth,
 		authHandler:           authHandler.NewHandler(serviceAuth),
@@ -61,5 +66,7 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 		filmHandler:           filmHandler.NewHandler(serviceFilm),
 		cinemaService: serviceCinema,
 		cinemaHandler: cinemaHandler.NewHandler(serviceCinema),
+		hallHandler: hallHandler.NewHandler(serviceHall),
+		hallService: serviceHall,
 	}, nil
 }
