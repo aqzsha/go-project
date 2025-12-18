@@ -17,6 +17,7 @@ type Repository interface {
 	Get(ctx context.Context, id int64) (models.Review, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	List(ctx context.Context) ([]models.Review, error)
+	FilmList(ctx context.Context, id int64) ([]models.Review, error)
 }
 
 type repository struct {
@@ -29,16 +30,15 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (r *repository) Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error) {
 	review := models.Review{
-		FilmID:        input.FilmID,
-		UserID:        input.UserID,
-		Body:          input.Body,
-		Rating:        input.Rating,
+		FilmID: input.FilmID,
+		UserID: input.UserID,
+		Body:   input.Body,
+		Rating: input.Rating,
 	}
 
 	if err := r.db.WithContext(ctx).Create(&review).Error; err != nil {
 		return models.Review{}, fmt.Errorf("failed to create Review: %w", err)
 	}
-
 
 	return review, nil
 }
@@ -68,13 +68,22 @@ func (r *repository) Delete(ctx context.Context, id int64) (bool, error) {
 	return true, nil
 }
 
-
 func (r *repository) List(ctx context.Context) ([]models.Review, error) {
 	var review []models.Review
 
 	if err := r.db.WithContext(ctx).
 		Find(&review).Error; err != nil {
 
+		return nil, fmt.Errorf("failed to get review list: %w", err)
+	}
+
+	return review, nil
+}
+
+func (r *repository) FilmList(ctx context.Context, id int64) ([]models.Review, error) {
+	var review []models.Review
+
+	if err := r.db.WithContext(ctx).Where("film_id = ?", id).Find(&review).Error; err != nil {
 		return nil, fmt.Errorf("failed to get review list: %w", err)
 	}
 

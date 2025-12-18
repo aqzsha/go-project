@@ -39,15 +39,15 @@ func (s *Server) initDomainRoutes() {
 	binder := validation.NewBinder(s.validator)
 	serviceFilm := filmService.NewService(s.pgdb)
 	handlerFilm := filmHandler.NewHandler(serviceFilm, binder)
-	serviceCinema := cinemaService.NewService(s.pgdb)	
+	serviceCinema := cinemaService.NewService(s.pgdb)
 	handlerCinema := cinemaHandler.NewHandler(serviceCinema, binder)
 	serviceGenre := genreService.NewService(s.pgdb)
 	handlerGenre := genreHandler.NewHandler(serviceGenre, binder)
 	serviceFilmReview := filmReviewService.NewService(s.pgdb)
 	handlerFilmReview := filmReviewHandler.NewHandler(serviceFilmReview, binder)
-	serviceHall := hallService.NewService(s.pgdb)
+	serviceHall := hallService.NewService(s.pgdb, s.clis.Booking)
 	handlerHall := hallHandler.NewHandler(serviceHall, binder)
-	
+
 	s.initFilmRoutes(handlerFilm)
 	s.initCinemaRoutes(handlerCinema)
 	s.initGenreRoutes(handlerGenre)
@@ -66,12 +66,13 @@ func (s *Server) initFilmRoutes(handler *filmHandler.Handler) {
 	FilmRoutes.DELETE("/genre/delete/:id", handler.DeleteGenre)
 }
 
-func (s *Server) initFilmReviewRoutes(handler *filmReviewHandler.Handler){
+func (s *Server) initFilmReviewRoutes(handler *filmReviewHandler.Handler) {
 	FilmReviewRoutes := mainRouter.Group("/film/review")
 	FilmReviewRoutes.POST("/store", handler.Create)
 	FilmReviewRoutes.GET("/get/:id", handler.Get)
 	FilmReviewRoutes.DELETE("/delete/:id", handler.Delete)
 	FilmReviewRoutes.GET("/list", handler.List)
+	FilmReviewRoutes.GET("/list/:filmId", handler.FilmList)
 }
 
 func (s *Server) initCinemaRoutes(handler *cinemaHandler.Handler) {
@@ -81,14 +82,14 @@ func (s *Server) initCinemaRoutes(handler *cinemaHandler.Handler) {
 	CinemaRoutes.DELETE("/delete/:id", handler.Delete)
 }
 
-func (s *Server) initGenreRoutes(handler *genreHandler.Handler){
+func (s *Server) initGenreRoutes(handler *genreHandler.Handler) {
 	GenreRoutes := mainRouter.Group("/genre")
 	GenreRoutes.POST("/store", handler.Create)
 	GenreRoutes.GET("/get/:id", handler.Get)
 	GenreRoutes.DELETE("/delete/:id", handler.Delete)
 }
 
-func (s *Server) initHallRoutes(handler *hallHandler.Handler){
+func (s *Server) initHallRoutes(handler *hallHandler.Handler) {
 	HallRoutes := mainRouter.Group("/hall")
 	HallRoutes.POST("/store", handler.Create)
 	HallRoutes.GET("/get/:id", handler.Get)

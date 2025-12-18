@@ -3,6 +3,8 @@ package hall
 import (
 	"context"
 	"errors"
+	"fmt"
+	"movies/internal/app/core/microservices/booking"
 	dto "movies/internal/app/domain/core/dto/hall"
 	repository "movies/internal/app/domain/repositories/hall"
 	"movies/internal/app/models"
@@ -22,16 +24,19 @@ type Service interface {
 }
 
 type service struct {
-	db         *gorm.DB
-	repository repository.Repository
+	db            *gorm.DB
+	repository    repository.Repository
+	bookingClient booking.Client
 }
 
 func NewService(
 	db *gorm.DB,
+	bookingClient booking.Client,
 ) Service {
 	return &service{
-		db:         db,
-		repository: repository.NewRepository(db),
+		db:            db,
+		repository:    repository.NewRepository(db),
+		bookingClient: bookingClient,
 	}
 }
 
@@ -43,6 +48,14 @@ func (s *service) Create(ctx context.Context, input dto.CreateHallDTO) (models.H
 	})
 	if err != nil {
 		return models.Hall{}, err
+	}
+
+	if err = s.bookingClient.StoreSeat(ctx, booking.StoreSeat{
+		HallID: hall.ID,
+		Row:    hall.Seats / 10,
+		Number: hall.Seats / (hall.Seats / 10),
+	}); err != nil {
+		return models.Hall{}, fmt.Errorf("failed store seat: %w", err)
 	}
 
 	return hall, nil
@@ -67,9 +80,12 @@ func (s *service) Delete(ctx context.Context, id int64) (bool, error) {
 		}
 	}
 
+	if err = s.bookingClient.DeleteSeat(ctx, id); err != nil {
+		return false, fmt.Errorf("failed delete seat: %w", err)
+	}
+
 	return ok, err
 }
-
 
 func (s *service) List(ctx context.Context) ([]models.Hall, error) {
 	hall, err := s.repository.List(ctx)

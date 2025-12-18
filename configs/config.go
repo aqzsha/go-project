@@ -11,14 +11,15 @@ var Config *config
 
 type (
 	config struct {
-		App    app     `yaml:"app"`
-		DB     db      `yaml:"db"`
-		Redis  redis   `yaml:"redis"`
+		App           app           `yaml:"app"`
+		DB            db            `yaml:"db"`
+		Redis         redis         `yaml:"redis"`
+		Microservices microservices `yaml:"microservices"`
 	}
 
 	app struct {
-		Name        string `yaml:"name"`
-		Url         string `yaml:"url"`
+		Name string `yaml:"name"`
+		Url  string `yaml:"url"`
 	}
 
 	db struct {
@@ -40,6 +41,22 @@ type (
 		Password string `yaml:"password"`
 		Port     string `yaml:"port"`
 	}
+
+	httpClient struct {
+		Timeout       int `yaml:"timeout"`
+		Retries       int `yaml:"retries"`
+		BackoffMillis int `yaml:"backoff_millis"`
+	}
+
+	upstreamService struct {
+		BaseURL string `yaml:"base_url"`
+		ApiKey  string `yaml:"api_key"`
+	}
+
+	microservices struct {
+		Http    httpClient      `yaml:"http"`
+		Booking upstreamService `yaml:"booking"`
+	}
 )
 
 func InitConfig() {
@@ -55,8 +72,8 @@ func InitConfig() {
 
 	Config = &config{
 		App: app{
-			Name:        viper.GetString("app.name"),
-			Url:         viper.GetString("app.url"),
+			Name: viper.GetString("app.name"),
+			Url:  viper.GetString("app.url"),
 		},
 		DB: db{
 			Postgres: postgres{
@@ -73,6 +90,16 @@ func InitConfig() {
 			Host:     viper.GetString("redis.host"),
 			Password: viper.GetString("redis.password"),
 			Port:     viper.GetString("redis.port"),
+		},
+		Microservices: microservices{
+			Http: httpClient{
+				Timeout:       viper.GetInt("microservices.http.timeout"),
+				Retries:       viper.GetInt("microservices.http.retries"),
+				BackoffMillis: viper.GetInt("microservices.http.backoff_millis"),
+			},
+			Booking: upstreamService{
+				BaseURL: viper.GetString("microservices.booking.base_url"),
+			},
 		},
 	}
 }

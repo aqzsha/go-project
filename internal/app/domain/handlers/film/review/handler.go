@@ -25,17 +25,16 @@ func NewHandler(service service.Service, binder *validation.Binder) *Handler {
 	return &Handler{service: service, binder: binder}
 }
 
-
 func (h *Handler) Create(ctx *gin.Context) {
 	payload, ok := validation.BindAndValidate[dto.CreateReviewDTO](h.binder, ctx)
 	if !ok {
 		return
 	}
 	film, err := h.service.Create(ctx, dto.CreateReviewDTO{
-		FilmID:        payload.FilmID,
-		UserID:        payload.UserID,
-		Body:          payload.Body,
-		Rating:        payload.Rating,
+		FilmID: payload.FilmID,
+		UserID: payload.UserID,
+		Body:   payload.Body,
+		Rating: payload.Rating,
 	})
 	if err != nil {
 		if code, ok := errStatusMap[err]; ok {
@@ -60,7 +59,6 @@ func (h *Handler) Delete(ctx *gin.Context) {
 
 		return
 	}
-
 
 	ok, err := h.service.Delete(ctx, ReviewID)
 	if err != nil {
@@ -103,9 +101,33 @@ func (h *Handler) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.SuccessResponse(review, response.OK))
 }
 
-
 func (h *Handler) List(ctx *gin.Context) {
 	review, err := h.service.List(ctx)
+	if err != nil {
+		if code, ok := errStatusMap[err]; ok {
+			ctx.JSON(code, response.ErrorResponse(err.Error()))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		}
+
+		errorhandler.FailOnError(err, "ListFilmReview service error")
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response.SuccessResponse(review, response.OK))
+}
+
+func (h *Handler) FilmList(ctx *gin.Context) {
+	FilmID, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(err, "GetFilmReview handler error")
+
+		return
+	}
+
+	review, err := h.service.FilmList(ctx, FilmID)
 	if err != nil {
 		if code, ok := errStatusMap[err]; ok {
 			ctx.JSON(code, response.ErrorResponse(err.Error()))

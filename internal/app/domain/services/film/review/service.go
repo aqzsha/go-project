@@ -19,6 +19,7 @@ type Service interface {
 	Get(ctx context.Context, id int64) (models.Review, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	List(ctx context.Context) ([]models.Review, error)
+	FilmList(ctx context.Context, filmId int64) ([]models.Review, error)
 }
 
 type service struct {
@@ -37,10 +38,10 @@ func NewService(
 
 func (s *service) Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error) {
 	review, err := s.repository.Create(ctx, dto.CreateReviewDTO{
-		FilmID:        input.FilmID,
-		UserID:        input.UserID,
-		Body:          input.Body,
-		Rating:        input.Rating,
+		FilmID: input.FilmID,
+		UserID: input.UserID,
+		Body:   input.Body,
+		Rating: input.Rating,
 	})
 	if err != nil {
 		return models.Review{}, err
@@ -71,9 +72,19 @@ func (s *service) Delete(ctx context.Context, id int64) (bool, error) {
 	return ok, err
 }
 
-
 func (s *service) List(ctx context.Context) ([]models.Review, error) {
 	review, err := s.repository.List(ctx)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return review, ErrNotFound
+		}
+	}
+
+	return review, err
+}
+
+func (s *service) FilmList(ctx context.Context, filmId int64) ([]models.Review, error) {
+	review, err := s.repository.FilmList(ctx, filmId)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return review, ErrNotFound

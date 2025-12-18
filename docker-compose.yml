@@ -1,21 +1,6 @@
 version: '3.9'
 
 services:
-  go-app:
-    build: .
-    container_name: kinoqor-movies-app
-    ports:
-      - '8050:8080'
-    volumes:
-      - .:/app
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      - ENV=development
-    networks:
-      - kinoqor
-
   postgres:
     image: postgres:16
     container_name: kinoqor_postgres
@@ -24,7 +9,7 @@ services:
       POSTGRES_PASSWORD: kinoqorpass
       POSTGRES_DB: kinoqordb
     ports:
-      - '5446:5432'
+      - '5888:5432'
     networks:
       - kinoqor
 

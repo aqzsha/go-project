@@ -6,6 +6,7 @@ import (
 	"movies/configs"
 	"movies/internal/app/core/helpers/errorhandler"
 	"movies/internal/app/core/http"
+	"movies/internal/app/core/microservices"
 	"movies/internal/app/core/rules"
 	"movies/pkg/cache"
 	"movies/pkg/postgres"
@@ -22,10 +23,11 @@ import (
 )
 
 type Server struct {
-	pgdb       *gorm.DB
-	rdb        *redis.Client
-	cache      cache.Cache
-	validator  *validation.Validator
+	pgdb      *gorm.DB
+	rdb       *redis.Client
+	cache     cache.Cache
+	clis      *microservices.Clients
+	validator *validation.Validator
 }
 
 var handler *gin.Engine
@@ -84,6 +86,12 @@ func (s *Server) initLayers(_ context.Context) error {
 	})
 	s.cache = cache.NewRedisCache(s.rdb, "users")
 
+	clis, err := microservices.NewClients()
+	if err != nil {
+		return fmt.Errorf("failed to init microservice clients: %w", err)
+	}
+	s.clis = clis
+
 	return s.initRoutes()
 }
 
@@ -116,7 +124,6 @@ func router() *gin.Engine {
 	return r
 }
 
-
 func (s *Server) initServer(_ context.Context) error {
 	httpCfg := configs.Config.App.Url
 	httpServer := http.NewHttpServer(handler, http.Port(httpCfg))
@@ -130,7 +137,7 @@ func (s *Server) initServer(_ context.Context) error {
 	case err := <-httpServer.Notify():
 		fmt.Println(fmt.Errorf("kinoqor-movies-api - запущен - httpServer.Notify: %w", err))
 	}
-	
+
 	if err := httpServer.Shutdown(); err != nil {
 		fmt.Println(fmt.Errorf("kinoqor-movies-api - запущен - httpServer.Shutdown: %w", err))
 	}
