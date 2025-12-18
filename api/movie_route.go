@@ -2,6 +2,7 @@ package api
 
 func (s *Server) initDomainMovieRoutes() {
 	s.initFilmRoutes()
+	s.initCinemaRoutes()
 }
 
 func (s *Server) initFilmRoutes() {
@@ -13,4 +14,11 @@ func (s *Server) initFilmRoutes() {
 	FilmRoutes.POST("/genre/store", s.deps.filmHandler.CreateGenre)
 	FilmRoutes.GET("/genre/list", s.deps.filmHandler.GetGenreList)
 	FilmRoutes.GET("/genre/delete/:id", s.deps.filmHandler.DeleteGenre)
+}
+
+func (s *Server) initCinemaRoutes() {
+	CinemaRoutes := mainRouter.Group("cinema/")
+	CinemaRoutes.POST("/store", s.deps.cinemaHandler.Create)
+	CinemaRoutes.GET("/get/:id", s.deps.cinemaHandler.Get)
+	CinemaRoutes.DELETE("/delete/:id", s.deps.cinemaHandler.Delete)
 }
