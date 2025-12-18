@@ -4,7 +4,7 @@ create table seat
 (
     id bigserial primary key,
     hall_id integer not null,
-    row varchar(255) not null,
+    row integer not null,
     number integer not null,
 
     foreign key (hall_id) references hall (id) on delete cascade
