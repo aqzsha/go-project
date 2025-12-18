@@ -5,10 +5,10 @@ import (
 	"context"
 	"errors"
 	"io"
+	myhttp "movies/internal/app/core/http"
 	"net/http"
 	"testing"
 	"time"
-	myhttp "users/internal/app/core/http"
 
 	"github.com/google/go-cmp/cmp"
 )
