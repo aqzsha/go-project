@@ -62,6 +62,7 @@ func (s *Server) initAuthRoutes(handler *authHandler.Handler) {
 	authRoutes.POST("/login", handler.Login)
 	authRoutes.POST("/refresh", handler.RefreshToken)
 	authRoutes.POST("/logout", handler.Logout)
+	authRoutes.POST("/check", handler.CheckToken)
 }
 
 func (s *Server) initPasswordRoutes(handler *passwordHandler.Handler) {
