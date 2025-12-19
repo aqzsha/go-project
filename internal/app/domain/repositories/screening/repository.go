@@ -13,7 +13,7 @@ import (
 var ErrNotFound = errors.New("screening not found")
 
 type Repository interface {
-	Create(ctx context.Context, input dto.CreateScreeningDTO) (models.Screening, error)
+	Create(ctx context.Context, input dto.ServiceCreateScreeningDTO) (models.Screening, error)
 	Get(ctx context.Context, id int64) (models.Screening, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	ListByFilm(ctx context.Context, filmId int64) ([]models.Screening, error)
@@ -30,7 +30,7 @@ func NewRepository(db *gorm.DB) Repository {
 }
 func (r *repository) Create(
 	ctx context.Context,
-	input dto.CreateScreeningDTO,
+	input dto.ServiceCreateScreeningDTO,
 ) (models.Screening, error) {
 
 	var screening models.Screening

@@ -8,6 +8,7 @@ import (
 	service "booking/internal/app/domain/services/screening"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,15 +31,40 @@ func (h *Handler) Create(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	screening, err := h.service.Create(ctx, dto.CreateScreeningDTO{
+
+	var startDate time.Time
+	if payload.StartAt != "" {
+		parseStart, err := time.Parse("2006-01-02", payload.StartAt)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, response.ErrorResponse(response.ValidationError))
+			errorhandler.FailOnError(err, "failed to parse start date")
+			return
+		}
+
+		startDate = parseStart
+	}
+
+	var endDate time.Time
+	if payload.EndAt != "" {
+		parseEnd, err := time.Parse("2006-01-02", payload.EndAt)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, response.ErrorResponse(response.ValidationError))
+			errorhandler.FailOnError(err, "failed to parse end date")
+			return
+		}
+
+		endDate = parseEnd
+	}
+
+	screening, err := h.service.Create(ctx, dto.ServiceCreateScreeningDTO{
 		CinemaID: payload.CinemaID,
 		HallID:   payload.HallID,
 		FilmID:   payload.FilmID,
 		Price:    payload.Price,
 		Format:   payload.Format,
 		Language: payload.Language,
-		StartAt:  payload.StartAt,
-		EndAt:    payload.EndAt,
+		StartAt:  startDate,
+		EndAt:    endDate,
 	})
 	if err != nil {
 		if code, ok := errStatusMap[err]; ok {

@@ -50,9 +50,9 @@ func (s *Server) initScreeningRoutes(handler *screeningHandler.Handler) {
 	ScreeningRoutes.POST("/store", handler.Create)
 	ScreeningRoutes.GET("/get/:id", handler.Get)
 	ScreeningRoutes.DELETE("/delete/:id", handler.Delete)
-	ScreeningRoutes.GET("/list-by-film/:filmId", handler.ListByFilm)
-	ScreeningRoutes.GET("/list-by-cinema/:cinemaId", handler.ListByCinema)
-	ScreeningRoutes.GET("/list-by-hall/:hallId", handler.ListByHall)
+	ScreeningRoutes.GET("/list-by-film/:id", handler.ListByFilm)
+	ScreeningRoutes.GET("/list-by-cinema/:id", handler.ListByCinema)
+	ScreeningRoutes.GET("/list-by-hall/:id", handler.ListByHall)
 }
 
 func (s *Server) initSeatRoutes(handler *seatHandler.Handler) {

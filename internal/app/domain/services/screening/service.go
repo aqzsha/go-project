@@ -15,7 +15,7 @@ var (
 )
 
 type Service interface {
-	Create(ctx context.Context, input dto.CreateScreeningDTO) (models.Screening, error)
+	Create(ctx context.Context, input dto.ServiceCreateScreeningDTO) (models.Screening, error)
 	Get(ctx context.Context, id int64) (models.Screening, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	ListByFilm(ctx context.Context, filmId int64) ([]models.Screening, error)
@@ -37,8 +37,8 @@ func NewService(
 	}
 }
 
-func (s *service) Create(ctx context.Context, payload dto.CreateScreeningDTO) (models.Screening, error) {
-	screening, err := s.repository.Create(ctx, dto.CreateScreeningDTO{
+func (s *service) Create(ctx context.Context, payload dto.ServiceCreateScreeningDTO) (models.Screening, error) {
+	screening, err := s.repository.Create(ctx, dto.ServiceCreateScreeningDTO{
 		CinemaID: payload.CinemaID,
 		HallID:   payload.HallID,
 		FilmID:   payload.FilmID,
