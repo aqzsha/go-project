@@ -1,6 +1,6 @@
 app:
   name: movies
-  url: 127.0.0.1:8888
+  url: 127.0.0.1:8884
 
 db:
   postgres:
