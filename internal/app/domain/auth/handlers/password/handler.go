@@ -25,7 +25,7 @@ func NewHandler(service service.Service) *Handler {
 // @Produce		json
 // @Param		request  body	    password.ForgotPasswordDTO	true	"Forgot password"
 // @Success		200		{object}	response.CommonResponse
-// @Router		/api/v1/auth/password/forgot [post]
+// @Router		/auth/password/forgot [post]
 func (h *Handler) ForgotPassword(ctx *gin.Context) {
 	resp := h.service.ForgotPassword(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
@@ -46,7 +46,7 @@ func (h *Handler) ForgotPassword(ctx *gin.Context) {
 // @Produce		json
 // @Param		request   body	    password.ResetPasswordDTO	true	"Reset password"
 // @Success		200		{object}	response.CommonResponse
-// @Router		/api/v1/auth/password/reset [post]
+// @Router		/auth/password/reset [post]
 func (h *Handler) ResetPassword(ctx *gin.Context) {
 	resp := h.service.ResetPassword(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
@@ -68,7 +68,7 @@ func (h *Handler) ResetPassword(ctx *gin.Context) {
 // @Param        request    body  password.ChangePasswordDTO  true  "Change password"
 // @Success      200   {object}  response.CommonResponse
 // @Security     BearerAuth
-// @Router       /api/v1/auth/password/change [post]
+// @Router       /auth/password/change [post]
 func (h *Handler) ChangePassword(ctx *gin.Context) {
 	resp := h.service.ChangePassword(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {

@@ -2,6 +2,7 @@ package authenticate
 
 import (
 	"context"
+	"fmt"
 	"gateway/internal/app/core/contracts/headercontract"
 	"gateway/internal/app/core/helpers/errorhandler"
 	authservice "gateway/internal/app/domain/auth/services"
@@ -34,24 +35,18 @@ func (m *Middleware) Handle() gin.HandlerFunc {
 		stdCtx := ctx.Request.Context()
 		stdCtx = context.WithValue(stdCtx, headercontract.BearerTokenKey{}, token)
 
-		authEmail, err := m.authService.GetAuthorizedEmail(stdCtx)
+		authID, err := m.authService.GetAuthorizedID(stdCtx)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response.ErrorResponse(response.Unauthorized))
-			errorhandler.FailOnError(err, "failed to get authorized email")
+			errorhandler.FailOnError(err, "failed to get authorized id")
 
 			return
 		}
 
-		authUser, err := m.authService.GetByEmail(stdCtx, authEmail)
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response.ErrorResponse(response.Unauthorized))
-			errorhandler.FailOnError(err, "failed to get authorized user data")
-
-			return
-		}
+		fmt.Println(authID)
 
 		stdCtx = context.WithValue(stdCtx, headercontract.AuthUserKey{}, headercontract.AuthUser{
-			ID:         authUser.ID,
+			ID:         authID,
 		})
 		ctx.Request = ctx.Request.WithContext(stdCtx)
 

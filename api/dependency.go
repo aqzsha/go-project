@@ -9,14 +9,16 @@ import (
 	passwordHandler "gateway/internal/app/domain/auth/handlers/password"
 	authService "gateway/internal/app/domain/auth/services"
 	passwordService "gateway/internal/app/domain/auth/services/password"
-	filmHandler "gateway/internal/app/domain/movies/handlers/film"
-	filmService "gateway/internal/app/domain/movies/services/film"
 	cinemaHandler "gateway/internal/app/domain/movies/handlers/cinema"
-	cinemaService "gateway/internal/app/domain/movies/services/cinema"
-	hallHandler "gateway/internal/app/domain/movies/handlers/hall"
-	hallService "gateway/internal/app/domain/movies/services/hall"
+	filmHandler "gateway/internal/app/domain/movies/handlers/film"
+	filmReviewHandler "gateway/internal/app/domain/movies/handlers/film/review"
 	genreHandler "gateway/internal/app/domain/movies/handlers/genre"
+	hallHandler "gateway/internal/app/domain/movies/handlers/hall"
+	cinemaService "gateway/internal/app/domain/movies/services/cinema"
+	filmService "gateway/internal/app/domain/movies/services/film"
+	filmReviewService "gateway/internal/app/domain/movies/services/film/review"
 	genreService "gateway/internal/app/domain/movies/services/genre"
+	hallService "gateway/internal/app/domain/movies/services/hall"
 )
 
 type dependency struct {
@@ -32,13 +34,14 @@ type dependency struct {
 	hallHandler 		  *hallHandler.Handler
 	genreService 		  genreService.Service
 	genreHandler 		  *genreHandler.Handler
+	filmReviewService 	  filmReviewService.Service	
+	filmReviewHandler 	  *filmReviewHandler.Handler
 }
 
 func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	authClient, err := microservice.NewBaseClient(
 		baseHttp.Client,
 		configs.Config.Microservices.Auth.BaseURL,
-		configs.Config.Microservices.Auth.ApiKey,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("microservices auth client: %w", err)
@@ -51,7 +54,6 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	movieClient, err := microservice.NewBaseClient(
 		baseHttp.Client,
 		configs.Config.Microservices.Movies.BaseURL,
-		configs.Config.Microservices.Movies.ApiKey,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("microservices movie client: %w", err)
@@ -61,6 +63,8 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 	serviceFilm := filmService.NewService(movieRequestHandler)
 	serviceCinema := cinemaService.NewService(movieRequestHandler)
 	serviceHall := hallService.NewService(movieRequestHandler)
+	serviceGenre := genreService.NewService(movieRequestHandler)
+	serviceFilmReview := filmReviewService.NewService(movieRequestHandler)
 	return &dependency{
 		authService:           serviceAuth,
 		authHandler:           authHandler.NewHandler(serviceAuth),
@@ -68,9 +72,13 @@ func newDeps(baseHttp *myhttp.ClientBase) (*dependency, error) {
 		passwordHandler:       passwordHandler.NewHandler(servicePassword),
 		filmService:           serviceFilm,
 		filmHandler:           filmHandler.NewHandler(serviceFilm),
-		cinemaService: serviceCinema,
-		cinemaHandler: cinemaHandler.NewHandler(serviceCinema),
-		hallHandler: hallHandler.NewHandler(serviceHall),
-		hallService: serviceHall,
+		cinemaService:         serviceCinema,
+		cinemaHandler:         cinemaHandler.NewHandler(serviceCinema),
+		hallService:           serviceHall,
+		hallHandler:           hallHandler.NewHandler(serviceHall),
+		genreService:          serviceGenre,
+		genreHandler:          genreHandler.NewHandler(serviceGenre),
+		filmReviewService:     serviceFilmReview,		
+		filmReviewHandler:     filmReviewHandler.NewHandler(serviceFilmReview),
 	}, nil
 }

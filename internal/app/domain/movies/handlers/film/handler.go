@@ -23,6 +23,7 @@ func NewHandler(service service.Service) *Handler {
 // @Tags		Movie
 // @Accept		json
 // @Produce		json
+// @Security    BearerAuth
 // @Param		request  body	film.CreateFilmDTO	true	"Film data"
 // @Success		200		{object}	response.CommonResponse
 // @Router		/film/store [post]
@@ -44,6 +45,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 // @Tags		Movie
 // @Param		id	path	int64	true	"Movie ID"
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/delete/{id} [delete]
 func (h *Handler) Delete(ctx *gin.Context) {
@@ -64,6 +66,7 @@ func (h *Handler) Delete(ctx *gin.Context) {
 // @Description	Returns Movie details by its ID
 // @Tags		Movie
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Movie ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/get/{id} [get]
@@ -84,6 +87,7 @@ func (h *Handler) Get(ctx *gin.Context) {
 // @Description	Returns list of Movie
 // @Tags		Movie
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/list [get]
 func (h *Handler) List(ctx *gin.Context) {
@@ -99,13 +103,14 @@ func (h *Handler) List(ctx *gin.Context) {
 }
 
 
-// Create CreateGenre godoc
+// CreateGenre CreateGenre godoc
 // @Summary		Create Genre
 // @Description	Creates a Genre
-// @Tags		Genre
+// @Tags		Movie
 // @Accept		json
 // @Produce		json
-// @Param		request  body	film.CreateFilmDTO	true	"Film data"
+// @Security    BearerAuth
+// @Param		request  body	film.CreateFilmGenreDTO	true	"Film Genre data"
 // @Success		200		{object}	response.CommonResponse
 // @Router		/film/genre/store [post]
 func (h *Handler) CreateGenre(ctx *gin.Context) {
@@ -120,12 +125,13 @@ func (h *Handler) CreateGenre(ctx *gin.Context) {
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-// Delete DeleteGenre godoc
+// DeleteGenre DeleteGenre godoc
 // @Summary		Delete Genre by ID
 // @Description	Deletes a Genre by ID
-// @Tags		Genre
+// @Tags		Movie
 // @Param		id	path	int64	true	"Genre ID"
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/genre/delete/{id} [delete]
 func (h *Handler) DeleteGenre(ctx *gin.Context) {
@@ -140,11 +146,12 @@ func (h *Handler) DeleteGenre(ctx *gin.Context) {
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
 
-// List   ListGenre godoc
+// GetGenreList   ListGenre godoc
 // @Summary		Get list of genre
 // @Description	Returns list of genre
-// @Tags		Genre
+// @Tags		Movie
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/genre/list [get]
 func (h *Handler) GetGenreList(ctx *gin.Context) {

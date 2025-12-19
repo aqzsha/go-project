@@ -15,10 +15,9 @@ type Client interface {
 type BaseClient struct {
 	Client  *http.Client
 	baseURL *url.URL
-	apiKey  string
 }
 
-func NewBaseClient(client *http.Client, baseURL, apiKey string) (*BaseClient, error) {
+func NewBaseClient(client *http.Client, baseURL string) (*BaseClient, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
@@ -26,14 +25,12 @@ func NewBaseClient(client *http.Client, baseURL, apiKey string) (*BaseClient, er
 
 	return &BaseClient{
 		baseURL: u,
-		apiKey:  apiKey,
 		Client:  client,
 	}, nil
 }
 
 func (c *BaseClient) Do(ctx context.Context, req *http.Request) (*http.Response, error) {
 	req = req.WithContext(ctx)
-	req.Header.Set("x-api-key", c.apiKey)
 
 	return c.Client.Do(req)
 }

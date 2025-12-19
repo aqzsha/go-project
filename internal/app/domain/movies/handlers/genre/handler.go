@@ -22,6 +22,8 @@ func NewHandler(service service.Service) *Handler {
 // @Tags		Genre
 // @Accept		json
 // @Produce		json
+// @Security    BearerAuth
+// @Param		request  body	genre.CreateGenreDTO	true	"Genre data"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/genre/store [post]
 func (h *Handler) Create(ctx *gin.Context) {
@@ -42,6 +44,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 // @Summary		Get Genre by ID
 // @Tags		Genre
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Genre ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/genre/get/{id} [get]
@@ -63,6 +66,7 @@ func (h *Handler) Get(ctx *gin.Context) {
 // @Summary		Delete Genre by ID
 // @Tags		Genre
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Genre ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/genre/delete/{id} [delete]

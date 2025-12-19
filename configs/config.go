@@ -37,7 +37,6 @@ type (
 
 	upstreamService struct {
 		BaseURL string `yaml:"base_url"`
-		ApiKey  string `yaml:"api_key"`
 	}
 
 	microservices struct {
@@ -79,19 +78,15 @@ func InitConfig() {
 			},
 			Movies: upstreamService{
 				BaseURL: viper.GetString("microservices.movies.base_url"),
-				ApiKey:  viper.GetString("microservices.movies.api_key"),
 			},
 			Auth: upstreamService{
 				BaseURL: viper.GetString("microservices.auth.base_url"),
-				ApiKey:  viper.GetString("microservices.auth.api_key"),
 			},
 			Notification: upstreamService{
 				BaseURL: viper.GetString("microservices.notification.base_url"),
-				ApiKey:  viper.GetString("microservices.notification.api_key"),
 			},
 			Booking: upstreamService{
 				BaseURL: viper.GetString("microservices.booking.base_url"),
-				ApiKey:  viper.GetString("microservices.booking.api_key"),
 			},
 		},
 	}

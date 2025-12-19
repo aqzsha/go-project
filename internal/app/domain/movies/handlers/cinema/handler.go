@@ -2,8 +2,8 @@ package cinema
 
 import (
 	"gateway/internal/app/core/helpers/errorhandler"
-	service "gateway/internal/app/domain/movies/services/cinema"
 	cinemaDto "gateway/internal/app/domain/movies/dto/cinema"
+	service "gateway/internal/app/domain/movies/services/cinema"
 
 	"gateway/pkg/response"
 	"net/http"
@@ -26,7 +26,8 @@ func NewHandler(service service.Service) *Handler {
 // @Tags        Cinema
 // @Accept      json
 // @Produce     json
-// @Param request body CreateCinemaDTO true "Cinema data"
+// @Security    BearerAuth
+// @Param request body cinema.CreateCinemaDTO true "Cinema data"
 // @Success     200 {object} response.CommonResponse
 // @Router      /cinema/store [post]
 func (h *Handler) Create(ctx *gin.Context) {
@@ -49,6 +50,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 // @Tags		Cinema
 // @Param		id	path	int64	true	"Cinema ID"
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/cinema/delete/{id} [delete]
 func (h *Handler) Delete(ctx *gin.Context) {
@@ -70,6 +72,7 @@ func (h *Handler) Delete(ctx *gin.Context) {
 // @Description	Returns Cinema details by its ID
 // @Tags		Cinema
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Cinema ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/cinema/get/{id} [get]

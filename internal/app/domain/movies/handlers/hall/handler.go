@@ -23,6 +23,8 @@ func NewHandler(service service.Service) *Handler {
 // @Tags		Hall
 // @Accept		json
 // @Produce		json
+// @Security    BearerAuth
+// @Param		request  body	hall.CreateHallDTO	true	"Hall data"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/hall/store [post]
 func (h *Handler) Create(ctx *gin.Context) {
@@ -40,6 +42,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 // @Summary		Get Hall by ID
 // @Tags		Hall
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Hall ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/hall/get/{id} [get]
@@ -58,6 +61,7 @@ func (h *Handler) Get(ctx *gin.Context) {
 // @Summary		Delete Hall by ID
 // @Tags		Hall
 // @Produce		json
+// @Security    BearerAuth
 // @Param		id	path	int64	true	"Hall ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/hall/delete/{id} [delete]
@@ -76,6 +80,7 @@ func (h *Handler) Delete(ctx *gin.Context) {
 // @Summary		Get list of halls
 // @Tags		Hall
 // @Produce		json
+// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/hall/list [get]
 func (h *Handler) List(ctx *gin.Context) {

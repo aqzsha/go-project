@@ -4,6 +4,8 @@ func (s *Server) initDomainMovieRoutes() {
 	s.initFilmRoutes()
 	s.initCinemaRoutes()
 	s.initHallRoutes()
+	s.initGenreRoutes()
+	s.initFilmReviewRoutes()
 }
 
 func (s *Server) initFilmRoutes() {
@@ -18,7 +20,7 @@ func (s *Server) initFilmRoutes() {
 }
 
 func (s *Server) initCinemaRoutes() {
-	CinemaRoutes := mainRouter.Group("cinema/")
+	CinemaRoutes := authMiddlewareRouter.Group("cinema/")
 	CinemaRoutes.POST("/store", s.deps.cinemaHandler.Create)
 	CinemaRoutes.GET("/get/:id", s.deps.cinemaHandler.Get)
 	CinemaRoutes.DELETE("/delete/:id", s.deps.cinemaHandler.Delete)
@@ -30,4 +32,20 @@ func (s *Server) initHallRoutes() {
 	HallRoutes.GET("/get/:id", s.deps.hallHandler.Get)
 	HallRoutes.DELETE("/delete/:id", s.deps.hallHandler.Delete)
 	HallRoutes.GET("/list", s.deps.hallHandler.List)
+}
+
+func (s *Server) initGenreRoutes() {
+	GenreRoutes := mainRouter.Group("genre/")
+	GenreRoutes.POST("/store", s.deps.genreHandler.Create)
+	GenreRoutes.GET("/get/:id", s.deps.genreHandler.Get)
+	GenreRoutes.DELETE("/delete/:id", s.deps.genreHandler.Delete)
+}
+
+func (s *Server) initFilmReviewRoutes() {
+	FilmReviewRoutes := authMiddlewareRouter.Group("/film/review")
+	FilmReviewRoutes.POST("/store", s.deps.filmReviewHandler.Create)
+	FilmReviewRoutes.GET("/get/:id", s.deps.filmReviewHandler.Get)
+	FilmReviewRoutes.DELETE("/delete/:id", s.deps.filmReviewHandler.Delete)
+	FilmReviewRoutes.GET("/list", s.deps.filmReviewHandler.List)
+	FilmReviewRoutes.GET("/list/:filmId", s.deps.filmReviewHandler.ListFilm)
 }

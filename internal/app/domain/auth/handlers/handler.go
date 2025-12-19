@@ -25,7 +25,7 @@ func NewHandler(service services.Service) *AuthHandler {
 // @Produce		json
 // @Param       request body auth.LoginDTO true "Login data"
 // @Success		200		{object}	response.CommonResponse
-// @Router		/api/v1/auth/login [post]
+// @Router		/auth/login [post]
 func (h *AuthHandler) Login(ctx *gin.Context) {
 	resp := h.service.Login(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
@@ -46,7 +46,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 // @Produce		json
 // @Param		request body auth.RefreshTokenDTO true "Refresh token"
 // @Success		200	{object}	response.CommonResponse
-// @Router		/api/v1/auth/refresh [post]
+// @Router		/auth/refresh [post]
 func (h *AuthHandler) Refresh(ctx *gin.Context) {
 	resp := h.service.Refresh(ctx.Request.Context(), ctx.Request.Body)
 	if resp.Error != nil {
@@ -67,7 +67,7 @@ func (h *AuthHandler) Refresh(ctx *gin.Context) {
 // @Produce		json
 // @Success		200	{object}	response.CommonResponse
 // @Security    BearerAuth
-// @Router		/api/v1/auth/logout [post]
+// @Router		/auth/logout [post]
 func (h *AuthHandler) Logout(ctx *gin.Context) {
 	resp := h.service.Logout(ctx.Request.Context())
 	if resp.Error != nil {
