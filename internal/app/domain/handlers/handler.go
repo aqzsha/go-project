@@ -6,6 +6,7 @@ import (
 	"auth/internal/app/core/validation"
 	dto "auth/internal/app/domain/core/dto/requests"
 	serviceDto "auth/internal/app/domain/core/dto/services"
+	"auth/internal/app/domain/resources"
 	service "auth/internal/app/domain/services"
 	"net/http"
 
@@ -89,4 +90,22 @@ func (h *Handler) Logout(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response.SuccessResponse(logout, response.OK))
+}
+
+func (h *Handler) CheckToken(ctx *gin.Context) {
+	user, err := h.service.CheckToken(ctx, ctx.GetHeader("Authorization"))
+	if err != nil {
+		if code, ok := errStatusMap[err]; ok {
+			ctx.JSON(code, response.ErrorResponse(err.Error()))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		}
+
+		errorhandler.FailOnError(err, "CheckToken service error")
+
+		return
+	}
+
+	userResource := resources.NewResource(user)
+	ctx.JSON(http.StatusOK, response.SuccessResponse(userResource, response.OK))
 }
