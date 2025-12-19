@@ -1,33 +1,6 @@
 version: '3.9'
 
 services:
-  go-app:
-    build: .
-    container_name: kinokor-auth-app
-    ports:
-      - '8050:8080'
-    volumes:
-      - .:/app
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      - ENV=development
-    networks:
-      - kinokor
-
-  postgres:
-    image: postgres:16
-    container_name: kinokor_postgres
-    environment:
-      POSTGRES_USER: kinokoruser
-      POSTGRES_PASSWORD: kinokorpass
-      POSTGRES_DB: kinokordb
-    ports:
-      - '5446:5432'
-    networks:
-      - kinokor
-
   redis:
     image: redis:7
     container_name: kinokor_redis
