@@ -1,6 +1,7 @@
 package api
 
 import (
+	"movies/internal/app/core/http/middleware"
 	"movies/internal/app/core/validation"
 	cinemaHandler "movies/internal/app/domain/handlers/cinema"
 	filmHandler "movies/internal/app/domain/handlers/film"
@@ -17,6 +18,7 @@ import (
 )
 
 var mainRouter *gin.RouterGroup
+var authUserRouter *gin.RouterGroup
 
 func (s *Server) initRoutes() error {
 	handler = router()
@@ -36,6 +38,8 @@ func (s *Server) initHealthCheck() error {
 
 func (s *Server) initDomainRoutes() {
 	mainRouter = handler.Group("")
+	authUserRouter = mainRouter.Group("")
+	authUserRouter.Use(middleware.ContextWithAuthUser())
 	binder := validation.NewBinder(s.validator)
 	serviceFilm := filmService.NewService(s.pgdb)
 	handlerFilm := filmHandler.NewHandler(serviceFilm, binder)
@@ -56,7 +60,7 @@ func (s *Server) initDomainRoutes() {
 }
 
 func (s *Server) initFilmRoutes(handler *filmHandler.Handler) {
-	FilmRoutes := mainRouter.Group("/film")
+	FilmRoutes := authUserRouter.Group("/film")
 	FilmRoutes.POST("/store", handler.Create)
 	FilmRoutes.GET("/get/:id", handler.Get)
 	FilmRoutes.DELETE("/delete/:id", handler.Delete)
@@ -67,7 +71,7 @@ func (s *Server) initFilmRoutes(handler *filmHandler.Handler) {
 }
 
 func (s *Server) initFilmReviewRoutes(handler *filmReviewHandler.Handler) {
-	FilmReviewRoutes := mainRouter.Group("/film/review")
+	FilmReviewRoutes := authUserRouter.Group("/film/review")
 	FilmReviewRoutes.POST("/store", handler.Create)
 	FilmReviewRoutes.GET("/get/:id", handler.Get)
 	FilmReviewRoutes.DELETE("/delete/:id", handler.Delete)
@@ -76,21 +80,21 @@ func (s *Server) initFilmReviewRoutes(handler *filmReviewHandler.Handler) {
 }
 
 func (s *Server) initCinemaRoutes(handler *cinemaHandler.Handler) {
-	CinemaRoutes := mainRouter.Group("/cinema")
+	CinemaRoutes := authUserRouter.Group("/cinema")
 	CinemaRoutes.POST("/store", handler.Create)
 	CinemaRoutes.GET("/get/:id", handler.Get)
 	CinemaRoutes.DELETE("/delete/:id", handler.Delete)
 }
 
 func (s *Server) initGenreRoutes(handler *genreHandler.Handler) {
-	GenreRoutes := mainRouter.Group("/genre")
+	GenreRoutes := authUserRouter.Group("/genre")
 	GenreRoutes.POST("/store", handler.Create)
 	GenreRoutes.GET("/get/:id", handler.Get)
 	GenreRoutes.DELETE("/delete/:id", handler.Delete)
 }
 
 func (s *Server) initHallRoutes(handler *hallHandler.Handler) {
-	HallRoutes := mainRouter.Group("/hall")
+	HallRoutes := authUserRouter.Group("/hall")
 	HallRoutes.POST("/store", handler.Create)
 	HallRoutes.GET("/get/:id", handler.Get)
 	HallRoutes.DELETE("/delete/:id", handler.Delete)

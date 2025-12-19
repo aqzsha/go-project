@@ -1,6 +1,7 @@
 package review
 
 import (
+	headercontract "movies/internal/app/core/contracts/microservices/header-contract"
 	"movies/internal/app/core/helpers/errorhandler"
 	"movies/internal/app/core/helpers/response"
 	"movies/internal/app/core/validation"
@@ -30,11 +31,21 @@ func (h *Handler) Create(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	film, err := h.service.Create(ctx, dto.CreateReviewDTO{
+
+	authUser, err := headercontract.GetAuthUser(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(err, "failed Create Block handler")
+
+		return
+	}
+
+	film, err := h.service.Create(ctx, dto.ServiceCreateReviewDTO{
 		FilmID: payload.FilmID,
-		UserID: payload.UserID,
+		UserID: authUser.ID,
 		Body:   payload.Body,
 		Rating: payload.Rating,
+		Title: payload.Title,
 	})
 	if err != nil {
 		if code, ok := errStatusMap[err]; ok {
