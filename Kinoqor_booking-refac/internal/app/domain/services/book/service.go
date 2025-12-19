@@ -10,6 +10,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
@@ -188,6 +190,23 @@ func (s *service) PaidTicket(ctx context.Context, screeningSeatID int64) ([]byte
 		qrPNG,
 	)
 	if err != nil {
+		return nil, err
+	}
+
+	ticketsDir := "./tickets"
+	if err := os.MkdirAll(ticketsDir, 0755); err != nil {
+		return nil, err
+	}
+
+	fileName := fmt.Sprintf(
+		"ticket_%d_%s.pdf",
+		ticket.ID,
+		ticket.QrCode,
+	)
+
+	filePath := filepath.Join(ticketsDir, fileName)
+
+	if err := os.WriteFile(filePath, pdfBytes, 0644); err != nil {
 		return nil, err
 	}
 

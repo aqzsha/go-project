@@ -24,11 +24,11 @@ func NewHandler(service services.Service) *Handler {
 // @Accept		json
 // @Produce		json
 // @Security    BearerAuth
-// @Param		request  body	seat.CreateSeatDTO	true	"Seat data"
+// @Param		id	path	int64	true	"Screening ID"
 // @Success		200		{object}	response.CommonResponse
-// @Router		/book/store [post]
+// @Router		/book/store/{id} [post]
 func (h *Handler) Create(ctx *gin.Context) {
-	resp := h.service.Create(ctx.Request.Context(), ctx.Request.Body)
+	resp := h.service.Create(ctx.Request.Context(), ctx.Param("id"))
 	if resp.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
 		errorhandler.FailOnError(resp.Error, "CreateBook of Booking service error")

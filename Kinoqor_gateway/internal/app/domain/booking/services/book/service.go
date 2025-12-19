@@ -3,11 +3,10 @@ package book
 import (
 	"context"
 	microservice "gateway/internal/app/core/microservices"
-	"io"
 )
 
 type Service interface {
-	Create(ctx context.Context, payload io.Reader) microservice.Response
+	Create(ctx context.Context, id string) microservice.Response
 	Delete(ctx context.Context, id string) microservice.Response
 	Get(ctx context.Context, id string) microservice.Response
 	PaidTicket(ctx context.Context, id string) microservice.Response
@@ -22,10 +21,8 @@ func NewService(microservice *microservice.RequestHandler) Service {
 	return &service{microservice: microservice}
 }
 
-func (s *service) Create(ctx context.Context, payload io.Reader) microservice.Response {
-	return s.microservice.Post(ctx, "book/store", microservice.RequestOption{
-		Body: payload,
-	})
+func (s *service) Create(ctx context.Context, id string) microservice.Response {
+	return s.microservice.Post(ctx, "book/store/"+id, microservice.RequestOption{})
 }
 
 func (s *service) Delete(ctx context.Context, id string) microservice.Response {

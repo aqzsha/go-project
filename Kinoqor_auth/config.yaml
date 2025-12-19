@@ -1,0 +1,28 @@
+app:
+  name: auth
+  url: 127.0.0.1:1000
+
+db:
+  postgres:
+    connection: postgres
+    host: localhost
+    port: 5445
+    database: kinokor
+    username: user
+    password: 123456
+    sslmode: disable
+
+redis:
+  host: redis
+  password: null
+  port: 6379
+  cache_db: 2
+  protocol: 3
+
+microservices:
+  http:
+    timeout: 10
+    retries: 2
+    backoff_millis: 200
+  booking:
+    base_url: http://127.0.0.1:8881
