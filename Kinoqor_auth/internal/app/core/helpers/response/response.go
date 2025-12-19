@@ -1,0 +1,34 @@
+package response
+
+const OK = "OK"
+const Created = "created"
+const Updated = "updated"
+const Deleted = "deleted"
+const Unauthorized = "unauthorized"
+const ServerError = "server error"
+const ModelNotFound = "model not found"
+const ValidationError = "validation error"
+
+func SuccessResponse(data interface{}, message string) map[string]interface{} {
+	return map[string]interface{}{
+		"success": true,
+		"message": message,
+		"data":    data,
+	}
+}
+
+func ErrorResponse(message string) map[string]interface{} {
+	return map[string]interface{}{
+		"success": false,
+		"message": message,
+		"data":    nil,
+	}
+}
+
+func ValidationErrorResponse(message interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"success": false,
+		"message": message,
+		"data":    nil,
+	}
+}

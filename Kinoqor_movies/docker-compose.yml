@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: kinoqor_postgres
+    environment:
+      POSTGRES_USER: kinoqoruser
+      POSTGRES_PASSWORD: kinoqorpass
+      POSTGRES_DB: kinoqordb
+    ports:
+      - '5888:5432'
+    networks:
+      - kinoqor
+
+  redis:
+    image: redis:7
+    container_name: kinoqor_redis
+    ports:
+      - '6379:6379'
+    networks:
+      - kinoqor
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+
+networks:
+  kinoqor:
+    driver: bridge
