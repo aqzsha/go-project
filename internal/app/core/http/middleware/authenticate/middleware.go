@@ -2,7 +2,6 @@ package authenticate
 
 import (
 	"context"
-	"fmt"
 	"gateway/internal/app/core/contracts/headercontract"
 	"gateway/internal/app/core/helpers/errorhandler"
 	authservice "gateway/internal/app/domain/auth/services"
@@ -42,11 +41,9 @@ func (m *Middleware) Handle() gin.HandlerFunc {
 
 			return
 		}
-
-		fmt.Println(authID)
-
+		
 		stdCtx = context.WithValue(stdCtx, headercontract.AuthUserKey{}, headercontract.AuthUser{
-			ID:         authID,
+			ID: authID,
 		})
 		ctx.Request = ctx.Request.WithContext(stdCtx)
 

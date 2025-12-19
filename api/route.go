@@ -47,4 +47,5 @@ func (s *Server) initDomainRoutes() {
 
 	s.initDomainAuthRoutes()
 	s.initDomainMovieRoutes()
+	s.initDomainBookingRoutes()
 }
