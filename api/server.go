@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"movies/configs"
 	"movies/internal/app/core/helpers/errorhandler"
 	"movies/internal/app/core/http"
@@ -13,6 +15,7 @@ import (
 	"movies/pkg/validation"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -95,10 +98,38 @@ func (s *Server) initLayers(_ context.Context) error {
 	return s.initRoutes()
 }
 
+var (
+	httpRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total HTTP requests",
+		},
+		[]string{"method", "path", "status"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(httpRequestsTotal)
+}
+
+func MetricsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+
+		httpRequestsTotal.WithLabelValues(
+			c.Request.Method,
+			c.FullPath(),
+			strconv.Itoa(c.Writer.Status()),
+		).Inc()
+	}
+}
+
 func router() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	r.Use(MetricsMiddleware())
 	r.Use(cors.New(cors.Config{
 		AllowOriginFunc: func(origin string) bool { return true },
 		AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -137,7 +168,6 @@ func NewTestEngine(ctx context.Context) (*gin.Engine, *gorm.DB, error) {
 
 	return handler, s.pgdb, nil
 }
-
 
 func (s *Server) initServer(_ context.Context) error {
 	httpCfg := configs.Config.App.Url

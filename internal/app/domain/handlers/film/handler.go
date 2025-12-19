@@ -14,7 +14,7 @@ import (
 )
 
 var errStatusMap = map[error]int{
-	service.ErrNotFound: http.StatusNotFound,
+	service.ErrNotFound:      http.StatusNotFound,
 	service.ErrGenreNotFound: http.StatusNotFound,
 }
 
@@ -26,7 +26,6 @@ type Handler struct {
 func NewHandler(service service.Service, binder *validation.Binder) *Handler {
 	return &Handler{service: service, binder: binder}
 }
-
 
 func (h *Handler) Create(ctx *gin.Context) {
 	payload, ok := validation.BindAndValidate[dto.CreateFilmDTO](h.binder, ctx)
@@ -47,7 +46,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 	}
 
 	var endDate time.Time
-	if payload.StartDate != "" {
+	if payload.EndDate != "" {
 		parseEnd, err := time.Parse("2006-01-02", payload.EndDate)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, response.ErrorResponse(response.ValidationError))
@@ -58,7 +57,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 		endDate = parseEnd
 	}
 
-	var premier time.Time	
+	var premier time.Time
 	if payload.StartDate != "" {
 		parsePremier, err := time.Parse("2006-01-02", payload.Premier)
 		if err != nil {
@@ -69,8 +68,6 @@ func (h *Handler) Create(ctx *gin.Context) {
 
 		premier = parsePremier
 	}
-
-
 
 	film, err := h.service.Create(ctx, dto.CreateFilmServiceDTO{
 		Name:        payload.Name,
@@ -155,7 +152,7 @@ func (h *Handler) CreateGenre(ctx *gin.Context) {
 		return
 	}
 	genre, err := h.service.CreateGenre(ctx, dto.CreateFilmGenreDTO{
-		FilmID: payload.FilmID,
+		FilmID:  payload.FilmID,
 		GenreID: payload.GenreID,
 	})
 	if err != nil {
@@ -198,8 +195,6 @@ func (h *Handler) DeleteGenre(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.SuccessResponse(ok, response.Deleted))
 }
 
-
-
 func (h *Handler) GetGenreList(ctx *gin.Context) {
 	film, err := h.service.GetGenreList(ctx)
 	if err != nil {
@@ -216,7 +211,6 @@ func (h *Handler) GetGenreList(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response.SuccessResponse(film, response.OK))
 }
-
 
 func (h *Handler) List(ctx *gin.Context) {
 	review, err := h.service.List(ctx)
