@@ -23,6 +23,5 @@ func AuthUser(db *gorm.DB) header.AuthUser {
 
 	return header.AuthUser{
 		ID:         user.ID,
-		Email:      user.Email,
 	}
 }
