@@ -19,12 +19,10 @@ func TestGetAuthUser(t *testing.T) {
 				AuthUserKey{},
 				AuthUser{
 					ID:         1,
-					Email:      "user@example.com",
 				},
 			),
 			expected: AuthUser{
 				ID:         1,
-				Email:      "user@example.com",
 			},
 			shouldErr: false,
 		},

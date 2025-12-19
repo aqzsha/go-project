@@ -15,7 +15,7 @@ var (
 )
 
 type Service interface {
-	Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error)
+	Create(ctx context.Context, input dto.ServiceCreateReviewDTO) (models.Review, error)
 	Get(ctx context.Context, id int64) (models.Review, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	List(ctx context.Context) ([]models.Review, error)
@@ -36,11 +36,12 @@ func NewService(
 	}
 }
 
-func (s *service) Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error) {
-	review, err := s.repository.Create(ctx, dto.CreateReviewDTO{
+func (s *service) Create(ctx context.Context, input dto.ServiceCreateReviewDTO) (models.Review, error) {
+	review, err := s.repository.Create(ctx, dto.ServiceCreateReviewDTO{
 		FilmID: input.FilmID,
 		UserID: input.UserID,
 		Body:   input.Body,
+		Title:  input.Title,
 		Rating: input.Rating,
 	})
 	if err != nil {

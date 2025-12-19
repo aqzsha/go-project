@@ -13,7 +13,7 @@ import (
 var ErrNotFound = errors.New("review not found")
 
 type Repository interface {
-	Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error)
+	Create(ctx context.Context, input dto.ServiceCreateReviewDTO) (models.Review, error)
 	Get(ctx context.Context, id int64) (models.Review, error)
 	Delete(ctx context.Context, id int64) (bool, error)
 	List(ctx context.Context) ([]models.Review, error)
@@ -28,12 +28,13 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) Create(ctx context.Context, input dto.CreateReviewDTO) (models.Review, error) {
+func (r *repository) Create(ctx context.Context, input dto.ServiceCreateReviewDTO) (models.Review, error) {
 	review := models.Review{
 		FilmID: input.FilmID,
 		UserID: input.UserID,
 		Body:   input.Body,
 		Rating: input.Rating,
+		Title:  input.Title,
 	}
 
 	if err := r.db.WithContext(ctx).Create(&review).Error; err != nil {
