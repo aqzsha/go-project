@@ -16,6 +16,7 @@ type Repository interface {
 	Create(ctx context.Context, input dto.CreateCinemaDTO) (models.Cinema, error)
 	Get(ctx context.Context, id int64) (models.Cinema, error)
 	Delete(ctx context.Context, id int64) (bool, error)
+	List(ctx context.Context) ([]models.Cinema, error)
 }
 
 type repository struct {
@@ -58,12 +59,12 @@ func (r *repository) Get(ctx context.Context, id int64) (models.Cinema, error) {
 	var cinema models.Cinema
 
 	if err := r.db.WithContext(ctx).
-		Where("id = ?", id).
+		Preload("Details").
 		First(&cinema, id).Error; err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return cinema, ErrNotFound
 		}
-
 		return cinema, fmt.Errorf("failed to get Cinema: %w", err)
 	}
 
@@ -81,4 +82,16 @@ func (r *repository) Delete(ctx context.Context, id int64) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (r *repository) List(ctx context.Context) ([]models.Cinema, error) {
+	var films []models.Cinema
+
+	if err := r.db.WithContext(ctx).
+		Preload("Details").
+		Find(&films).Error; err != nil {
+		return nil, fmt.Errorf("failed to get Cinema list: %w", err)
+	}
+
+	return films, nil
 }

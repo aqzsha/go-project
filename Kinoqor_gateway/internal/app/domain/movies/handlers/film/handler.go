@@ -23,7 +23,6 @@ func NewHandler(service service.Service) *Handler {
 // @Tags		Movie
 // @Accept		json
 // @Produce		json
-// @Security    BearerAuth
 // @Param		request  body	film.CreateFilmDTO	true	"Film data"
 // @Success		200		{object}	response.CommonResponse
 // @Router		/film/store [post]
@@ -45,7 +44,6 @@ func (h *Handler) Create(ctx *gin.Context) {
 // @Tags		Movie
 // @Param		id	path	int64	true	"Movie ID"
 // @Produce		json
-// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/delete/{id} [delete]
 func (h *Handler) Delete(ctx *gin.Context) {
@@ -66,7 +64,6 @@ func (h *Handler) Delete(ctx *gin.Context) {
 // @Description	Returns Movie details by its ID
 // @Tags		Movie
 // @Produce		json
-// @Security    BearerAuth
 // @Param		id	path	int64	true	"Movie ID"
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/get/{id} [get]
@@ -87,7 +84,6 @@ func (h *Handler) Get(ctx *gin.Context) {
 // @Description	Returns list of Movie
 // @Tags		Movie
 // @Produce		json
-// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/list [get]
 func (h *Handler) List(ctx *gin.Context) {
@@ -109,7 +105,6 @@ func (h *Handler) List(ctx *gin.Context) {
 // @Tags		Movie
 // @Accept		json
 // @Produce		json
-// @Security    BearerAuth
 // @Param		request  body	film.CreateFilmGenreDTO	true	"Film Genre data"
 // @Success		200		{object}	response.CommonResponse
 // @Router		/film/genre/store [post]
@@ -131,7 +126,6 @@ func (h *Handler) CreateGenre(ctx *gin.Context) {
 // @Tags		Movie
 // @Param		id	path	int64	true	"Genre ID"
 // @Produce		json
-// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/genre/delete/{id} [delete]
 func (h *Handler) DeleteGenre(ctx *gin.Context) {
@@ -151,7 +145,6 @@ func (h *Handler) DeleteGenre(ctx *gin.Context) {
 // @Description	Returns list of genre
 // @Tags		Movie
 // @Produce		json
-// @Security    BearerAuth
 // @Success		200	{object}	response.CommonResponse
 // @Router		/film/genre/list [get]
 func (h *Handler) GetGenreList(ctx *gin.Context) {

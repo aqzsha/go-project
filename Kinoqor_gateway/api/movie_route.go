@@ -9,7 +9,7 @@ func (s *Server) initDomainMovieRoutes() {
 }
 
 func (s *Server) initFilmRoutes() {
-	FilmRoutes := authMiddlewareRouter.Group("film/")
+	FilmRoutes := mainRouter.Group("film/")
 	FilmRoutes.POST("/store", s.deps.filmHandler.Create)
 	FilmRoutes.GET("/get/:id", s.deps.filmHandler.Get)
 	FilmRoutes.DELETE("/delete/:id", s.deps.filmHandler.Delete)
@@ -20,14 +20,15 @@ func (s *Server) initFilmRoutes() {
 }
 
 func (s *Server) initCinemaRoutes() {
-	CinemaRoutes := authMiddlewareRouter.Group("cinema/")
+	CinemaRoutes := mainRouter.Group("cinema/")
 	CinemaRoutes.POST("/store", s.deps.cinemaHandler.Create)
 	CinemaRoutes.GET("/get/:id", s.deps.cinemaHandler.Get)
 	CinemaRoutes.DELETE("/delete/:id", s.deps.cinemaHandler.Delete)
+	CinemaRoutes.GET("/list", s.deps.cinemaHandler.List)
 }
 
 func (s *Server) initHallRoutes() {
-	HallRoutes := authMiddlewareRouter.Group("hall/")
+	HallRoutes := mainRouter.Group("hall/")
 	HallRoutes.POST("/store", s.deps.hallHandler.Create)
 	HallRoutes.GET("/get/:id", s.deps.hallHandler.Get)
 	HallRoutes.DELETE("/delete/:id", s.deps.hallHandler.Delete)

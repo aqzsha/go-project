@@ -66,12 +66,12 @@ func (r *repository) Get(ctx context.Context, id int64) (models.Film, error) {
 	var film models.Film
 
 	if err := r.db.WithContext(ctx).
-		Where("id = ?", id).
+		Preload("Details").
 		First(&film, id).Error; err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return film, ErrNotFound
 		}
-
 		return film, fmt.Errorf("failed to get Film: %w", err)
 	}
 
@@ -139,13 +139,13 @@ func (r *repository) GetGenreList(ctx context.Context) ([]models.FilmGenre, erro
 }
 
 func (r *repository) List(ctx context.Context) ([]models.Film, error) {
-	var film []models.Film
+	var films []models.Film
 
 	if err := r.db.WithContext(ctx).
-		Find(&film).Error; err != nil {
-
+		Preload("Details").
+		Find(&films).Error; err != nil {
 		return nil, fmt.Errorf("failed to get Film list: %w", err)
 	}
 
-	return film, nil
+	return films, nil
 }

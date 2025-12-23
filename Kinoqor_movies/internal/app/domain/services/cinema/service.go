@@ -18,6 +18,7 @@ type Service interface {
 	Create(ctx context.Context, input dto.CreateCinemaDTO) (models.Cinema, error)
 	Get(ctx context.Context, id int64) (models.Cinema, error)
 	Delete(ctx context.Context, id int64) (bool, error)
+	List(ctx context.Context) ([]models.Cinema, error)
 }
 
 type service struct {
@@ -69,4 +70,15 @@ func (s *service) Delete(ctx context.Context, id int64) (bool, error) {
 	}
 
 	return ok, err
+}
+
+func (s *service) List(ctx context.Context) ([]models.Cinema, error) {
+	review, err := s.repository.List(ctx)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return review, ErrNotFound
+		}
+	}
+
+	return review, err
 }

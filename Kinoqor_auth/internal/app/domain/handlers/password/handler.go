@@ -8,6 +8,7 @@ import (
 	serviceDto "auth/internal/app/domain/core/dto/services/password"
 	service "auth/internal/app/domain/services/password"
 	"net/http"
+	resources "auth/internal/app/domain/resources/password"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +21,7 @@ var errStatusMap = map[error]int{
 	service.ErrTokenExpired:    http.StatusUnauthorized,
 	service.ErrInvalidUser:     http.StatusUnauthorized,
 	service.ErrInvalidPassword: http.StatusBadRequest,
+	service.ErrInvalidPinCode:  http.StatusBadRequest,
 }
 
 type Handler struct {
@@ -106,3 +108,31 @@ func (h *Handler) ChangePassword(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response.SuccessResponse(nil, response.OK))
 }
+
+
+func (h *Handler) VerifyPin(ctx *gin.Context) {
+	payload, ok := validation.BindAndValidate[dto.VerifyPinDTO](h.binder, ctx)
+	if !ok {
+		return
+	}
+
+	user, err := h.service.VerifyPin(ctx, serviceDto.VerifyPinDTO{
+		Email:   payload.Email,
+		PinCode: payload.PinCode,
+	})
+	if err != nil {
+		if code, ok := errStatusMap[err]; ok {
+			ctx.JSON(code, response.ErrorResponse(err.Error()))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		}
+
+		errorhandler.FailOnError(err, "VerifyPin service error")
+
+		return
+	}
+
+	tokenResource := resources.NewResource(user)
+	ctx.JSON(http.StatusOK, response.SuccessResponse(tokenResource, response.OK))
+}
+

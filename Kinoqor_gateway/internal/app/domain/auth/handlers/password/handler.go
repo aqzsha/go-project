@@ -80,3 +80,26 @@ func (h *Handler) ChangePassword(ctx *gin.Context) {
 
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
+
+
+// VerifyPin godoc
+// @Summary		Verify Pin
+// @Description Verifying the pin code
+// @Tags		Auth
+// @Accept		json
+// @Produce		json
+// @Param		request   body	    password.VerifyPinDTO	true	"Verify Pin"
+// @Success		200		{object}	response.CommonResponse
+// @Router		/auth/password/verify-pin [post]
+func (h *Handler) VerifyPin(ctx *gin.Context) {
+	resp := h.service.VerifyPin(ctx.Request.Context(), ctx.Request.Body)
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "VerifyPin of Auth service error")
+
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}
+

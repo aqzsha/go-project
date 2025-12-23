@@ -89,3 +89,22 @@ func (h *Handler) Get(ctx *gin.Context) {
 
 	ctx.JSON(resp.StatusCode, resp.Data)
 }
+
+// List   ListMovie godoc
+// @Summary		Get list of movie
+// @Description	Returns list of Movie
+// @Tags		Cinema
+// @Produce		json
+// @Success		200	{object}	response.CommonResponse
+// @Router		/cinema/list [get]
+func (h *Handler) List(ctx *gin.Context) {
+	resp := h.service.List(ctx.Request.Context())
+	if resp.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		errorhandler.FailOnError(resp.Error, "ListFilm of Movie service error")
+
+		return
+	}
+
+	ctx.JSON(resp.StatusCode, resp.Data)
+}

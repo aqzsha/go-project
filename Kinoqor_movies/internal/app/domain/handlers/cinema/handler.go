@@ -103,3 +103,19 @@ func (h *Handler) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.SuccessResponse(film, response.OK))
 }
 
+func (h *Handler) List(ctx *gin.Context) {
+	review, err := h.service.List(ctx)
+	if err != nil {
+		if code, ok := errStatusMap[err]; ok {
+			ctx.JSON(code, response.ErrorResponse(err.Error()))
+		} else {
+			ctx.JSON(http.StatusInternalServerError, response.ErrorResponse(response.ServerError))
+		}
+
+		errorhandler.FailOnError(err, "ListCinema service error")
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response.SuccessResponse(review, response.OK))
+}

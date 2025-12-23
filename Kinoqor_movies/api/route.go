@@ -60,7 +60,7 @@ func (s *Server) initDomainRoutes() {
 }
 
 func (s *Server) initFilmRoutes(handler *filmHandler.Handler) {
-	FilmRoutes := authUserRouter.Group("/film")
+	FilmRoutes := mainRouter.Group("/film")
 	FilmRoutes.POST("/store", handler.Create)
 	FilmRoutes.GET("/get/:id", handler.Get)
 	FilmRoutes.DELETE("/delete/:id", handler.Delete)
@@ -80,10 +80,11 @@ func (s *Server) initFilmReviewRoutes(handler *filmReviewHandler.Handler) {
 }
 
 func (s *Server) initCinemaRoutes(handler *cinemaHandler.Handler) {
-	CinemaRoutes := authUserRouter.Group("/cinema")
+	CinemaRoutes := mainRouter.Group("/cinema")
 	CinemaRoutes.POST("/store", handler.Create)
 	CinemaRoutes.GET("/get/:id", handler.Get)
 	CinemaRoutes.DELETE("/delete/:id", handler.Delete)
+	CinemaRoutes.GET("/list", handler.List)
 }
 
 func (s *Server) initGenreRoutes(handler *genreHandler.Handler) {
@@ -94,7 +95,7 @@ func (s *Server) initGenreRoutes(handler *genreHandler.Handler) {
 }
 
 func (s *Server) initHallRoutes(handler *hallHandler.Handler) {
-	HallRoutes := authUserRouter.Group("/hall")
+	HallRoutes := mainRouter.Group("/hall")
 	HallRoutes.POST("/store", handler.Create)
 	HallRoutes.GET("/get/:id", handler.Get)
 	HallRoutes.DELETE("/delete/:id", handler.Delete)

@@ -16,3 +16,7 @@ type ChangePasswordDTO struct {
 	ConfirmPassword string `json:"new_password_confirmation"`
 }
 
+type VerifyPinDTO struct {
+	Email   string `json:"email" binding:"required,email"`
+	PinCode string `json:"pin_code" binding:"required"`
+}

@@ -16,5 +16,6 @@ func (s *Server) initPasswordRoutes() {
 	passwordRoutes := mainRouter.Group("auth/password/")
 	passwordRoutes.POST("/forgot", s.deps.passwordHandler.ForgotPassword)
 	passwordRoutes.POST("/reset", s.deps.passwordHandler.ResetPassword)
+	passwordRoutes.POST("/verify-pin", s.deps.passwordHandler.VerifyPin)
 	authMiddlewareRouter.POST("auth/password/change", s.deps.passwordHandler.ChangePassword)
 }

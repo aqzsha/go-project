@@ -9,6 +9,7 @@ import (
 	"auth/internal/app/domain/resources"
 	service "auth/internal/app/domain/services"
 	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +34,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-
+	fmt.Println(payload.Email)
 	token, status, err := h.service.Login(ctx, serviceDto.LoginDTO{
 		Email:    payload.Email,
 		Password: payload.Password,

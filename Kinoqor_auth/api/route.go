@@ -70,4 +70,5 @@ func (s *Server) initPasswordRoutes(handler *passwordHandler.Handler) {
 	passwordRoutes.POST("/forgot", handler.ForgotPassword)
 	passwordRoutes.POST("/reset", handler.ResetPassword)
 	passwordRoutes.POST("/change", handler.ChangePassword)
+	passwordRoutes.POST("/verify-pin", handler.VerifyPin)
 }

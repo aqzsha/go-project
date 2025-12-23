@@ -1,11 +1,11 @@
 app:
   name: auth
-  url: 127.0.0.1:1000
+  url: 192.168.30.100:3001
 
 db:
   postgres:
     connection: postgres
-    host: localhost
+    host: 192.168.30.110
     port: 5445
     database: kinokor
     username: user
@@ -26,3 +26,17 @@ microservices:
     backoff_millis: 200
   booking:
     base_url: http://127.0.0.1:8881
+
+oauth:
+  access_token_exp: 60
+  refresh_token_exp: 120
+
+mail:
+  host: smtp.gmail.com
+  driver: smtp
+  port: 587
+  username: akzholtasbay@gmail.com
+  password: pfcxuwtanxowzhvk
+  encryption: tls
+  from_address: akzholtasbay@gmail.com
+

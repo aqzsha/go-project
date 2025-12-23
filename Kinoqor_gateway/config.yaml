@@ -1,11 +1,11 @@
 app:
-  name: movies
-  url: 192.168.30.100:8884
+  name: gateway
+  url: 192.168.30.100:8888
 
 db:
   postgres:
     connection: postgres
-    host: 192.168.30.110
+    host: localhost
     port: 5445
     database: kinokor
     username: user
@@ -25,4 +25,10 @@ microservices:
     retries: 2
     backoff_millis: 200
   booking:
-    base_url: http://127.0.0.1:8881
+    base_url: http://192.168.30.100:8881
+  movies:
+    base_url: http://192.168.30.100:8884
+  auth:
+    base_url: http://192.168.30.100:3001
+  notification:
+    base_url: http://192.168.30.100:8884

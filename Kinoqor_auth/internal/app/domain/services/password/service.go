@@ -27,6 +27,7 @@ var (
 	ErrUnauthenticated = errors.New("unauthenticated")
 	ErrInvalidUser     = errors.New("invalid user id")
 	ErrInvalidPassword = errors.New("invalid password")
+	ErrInvalidPinCode  = errors.New("invalid pincode")
 )
 
 type Service interface {
@@ -34,6 +35,7 @@ type Service interface {
 	ResetPassword(ctx context.Context, input dto.ResetPasswordDTO) error
 	ChangePassword(ctx context.Context, input dto.ChangePasswordDTO) error
 	GetById(ctx context.Context, userID int64) (*models.User, error)
+	VerifyPin(ctx context.Context, input dto.VerifyPinDTO) (models.PasswordReset, error)
 }
 
 type service struct {
@@ -158,4 +160,22 @@ func (s *service) getByEmail(ctx context.Context, email string) (*models.User, e
 		return nil, err
 	}
 	return user, nil
+}
+
+
+func (s *service) VerifyPin(ctx context.Context, input dto.VerifyPinDTO) (models.PasswordReset, error) {
+	reset, err := s.repository.GetUserByPinCode(ctx, dto.VerifyPinDTO{
+		Email:   input.Email,
+		PinCode: input.PinCode,
+	})
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return reset, ErrUnauthenticated
+		}
+		if errors.Is(err, repository.ErrInvalidPinCode) {
+			return reset, ErrInvalidToken
+		}
+	}
+
+	return reset, nil
 }
